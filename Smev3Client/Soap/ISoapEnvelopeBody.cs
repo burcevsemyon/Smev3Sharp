@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Smev3Client.Test.Soap
+namespace Smev3Client.Soap
 {
     public interface ISoapEnvelopeBody : IXmlSerializable
     {       

@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Smev3Client.Test
+namespace Smev3Client.Utils
 {
     public static class Rfc4122
     {
         private static readonly DateTimeOffset GregorianCalendarStart = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);
-        
+
         public static Guid GenerateUUIDv1()
         {
             var uuidBytes = new byte[16];

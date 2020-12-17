@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Smev3Client.Test
+namespace Smev3Client
 {
     public class Smev3XmlSigner : ISmev3XmlSigner
     {

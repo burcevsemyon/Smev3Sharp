@@ -1,4 +1,4 @@
-﻿namespace Smev3Client.Test.Soap
+﻿namespace Smev3Client.Soap
 {
     public static class SoapConsts
     {

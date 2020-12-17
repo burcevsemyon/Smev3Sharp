@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace Smev3Client.Test.Soap
+namespace Smev3Client.Soap
 {
     public class SoapAction: IXmlSerializable
     {

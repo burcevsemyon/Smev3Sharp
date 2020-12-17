@@ -3,7 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smev3Client.Test", "Smev3Client.Test\Smev3Client.Test.csproj", "{F340829B-9DF9-4441-9FF5-EFC24F03D80C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client.Test", "Smev3Client.Test\Smev3Client.Test.csproj", "{F340829B-9DF9-4441-9FF5-EFC24F03D80C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{92A8A458-C93F-4DA5-BB36-9838805EA664} = {92A8A458-C93F-4DA5-BB36-9838805EA664}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smev3Client", "Smev3Client\Smev3Client.csproj", "{92A8A458-C93F-4DA5-BB36-9838805EA664}"
+	ProjectSection(ProjectDependencies) = postProject
+		{01C71948-BAD4-491C-A57D-11F0EC5F4023} = {01C71948-BAD4-491C-A57D-11F0EC5F4023}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CAPILite", "CAPILite\CAPILite.csproj", "{01C71948-BAD4-491C-A57D-11F0EC5F4023}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +25,14 @@ Global
 		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

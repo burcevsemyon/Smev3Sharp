@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Smev3Client.Test": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Smev3Client.Test
+namespace Smev3Client
 {
 
     public class Smev3ClientContext: ISmev3ClientContext

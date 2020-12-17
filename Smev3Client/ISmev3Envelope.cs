@@ -1,4 +1,4 @@
-﻿namespace Smev3Client.Test
+﻿namespace Smev3Client
 {
     public interface ISmev3Envelope
     {

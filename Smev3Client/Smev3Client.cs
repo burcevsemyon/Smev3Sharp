@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Smev3Client.Test
+namespace Smev3Client
 {
 
-    public class Smev3Client:
-        IDisposable
+    public class Smev3Client :
+        IDisposable, ISmev3Client
     {
         #region members
 
@@ -35,13 +35,13 @@ namespace Smev3Client.Test
         /// </summary>
         /// <param name="requestData"></param>
         public async Task<Smev3ClientResponse> SendAsync(
-            ISmev3Envelope envelope, 
+            ISmev3Envelope envelope,
             CancellationToken cancellationToken)
         {
             if (envelope == null)
-                throw new ArgumentNullException(nameof(envelope));            
+                throw new ArgumentNullException(nameof(envelope));
 
-            var envelopeBytes = envelope.Get();            
+            var envelopeBytes = envelope.Get();
 
             var str = Encoding.UTF8.GetString(envelopeBytes);
 
@@ -58,7 +58,7 @@ namespace Smev3Client.Test
             var response = await _httpClient.PostAsync(
                 string.Empty,
                 content,
-                cancellationToken);            
+                cancellationToken);
 
             return new Smev3ClientResponse
             {

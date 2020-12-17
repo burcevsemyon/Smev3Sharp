@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace Smev3Client.Test.Soap
+namespace Smev3Client.Soap
 {
     [XmlRoot(
      Namespace = SoapConsts.SOAP_NAMESPACE,

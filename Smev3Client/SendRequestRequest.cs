@@ -1,10 +1,10 @@
-﻿using Smev3Client.Test.Soap;
-
-using System;
+﻿using System;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace Smev3Client.Test
+using Smev3Client.Soap;
+
+namespace Smev3Client
 {
 
     public class SendRequestRequest :

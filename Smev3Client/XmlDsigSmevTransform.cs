@@ -4,12 +4,12 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Xml;
 
-namespace Smev3Client.Test
+namespace Smev3Client
 {
     class XmlDsigSmevTransform : Transform
     {
-        private static Type[] _inputTypes = new[] { typeof(XmlDocument) };
-        private static Type[] _outputTypes = new[] { typeof(XmlDocument) };
+        private static readonly Type[] _inputTypes = new[] { typeof(XmlDocument) };
+        private static readonly Type[] _outputTypes = new[] { typeof(XmlDocument) };
 
         public XmlDsigSmevTransform()
         {

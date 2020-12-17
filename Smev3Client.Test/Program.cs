@@ -1,4 +1,5 @@
-﻿using Smev3Client.Test.Soap;
+﻿
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Buffers;
 using System.Collections;
@@ -13,29 +14,33 @@ using System.Xml.Serialization;
 namespace Smev3Client.Test
 {
     class Program
-    {   
+    {
+        static readonly IServiceCollection _serviceCollection = new ServiceCollection();
+
         static async Task Main(string[] args)
         {
-            Smev3XmlSigner signer = new Smev3XmlSigner();
-            var doc = new XmlDocument();
+            
 
-            doc.Load(@"C:\temp\1.xml");
+            //Smev3XmlSigner signer = new Smev3XmlSigner();
+            //var doc = new XmlDocument();
 
-            var sign = signer.SignXmlElement(doc.DocumentElement, "f5f4d5b6bc852c94031313f89b862cf6a10b180f");
+            //doc.Load(@"C:\temp\1.xml");
 
-            return;
+            //var sign = signer.SignXmlElement(doc.DocumentElement, "f5f4d5b6bc852c94031313f89b862cf6a10b180f");
 
-            var client = new Smev3Client(new Smev3ClientContext(new Uri("http://smev3-n0.test.gosuslugi.ru:7500/smev/v1.2/ws")));
+            //return;
 
-            await client.SendAsync(new SendRequestRequest
-            (
-                new SenderProvidedRequestData(Rfc4122.GenerateUUIDv1()),
-                new Smev3XmlSigner()
-            ), default);
+            //var client = new Smev3Client(new Smev3ClientContext(new Uri("http://smev3-n0.test.gosuslugi.ru:7500/smev/v1.2/ws")));
+
+            //await client.SendAsync(new SendRequestRequest
+            //(
+            //    new SenderProvidedRequestData(Rfc4122.GenerateUUIDv1()),
+            //    new Smev3XmlSigner()
+            //), default);
 
 
 
-           // SerializeObject("c:/temp/1.xml");
+            // SerializeObject("c:/temp/1.xml");
 
             //Smev3EnvelopeHelper baseEnvelope = new Smev3EnvelopeHelper();
 
