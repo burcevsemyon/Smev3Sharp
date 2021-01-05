@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace Smev3Client
 {
-    public interface ISmev3Client: IDisposable
+    public interface ISmev3Client
     {
         /// <summary>
         /// Отправка пакета СМЭВ3

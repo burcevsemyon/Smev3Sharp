@@ -31,10 +31,7 @@ namespace Smev3Client.Soap
 
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString(
-                "MustUnderstand",
-                SoapConsts.SOAP_NAMESPACE,
-                "1");
+            writer.WriteAttributeString("mustUnderstand", "1");
 
             writer.WriteString("urn:" + _actionName);
         }

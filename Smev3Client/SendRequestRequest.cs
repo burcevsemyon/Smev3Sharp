@@ -6,7 +6,9 @@ using Smev3Client.Soap;
 
 namespace Smev3Client
 {
-
+    /// <summary>
+    /// Тело метода SendRequest
+    /// </summary>
     public class SendRequestRequest :
         ISoapEnvelopeBody,
         ISmev3Envelope
@@ -62,9 +64,23 @@ namespace Smev3Client
         {
             throw new NotImplementedException();
         }
+
         public void WriteXml(XmlWriter writer)
         {
+            writer.WriteStartElement("SendRequestRequest", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2);
             
+            _requestData.WriteXml(writer);
+
+            writer.WriteStartElement("CallerInformationSystemSignature");
+
+            _signer.SignXmlElement(
+                    Smev3XmlSerializer.ToXmlElement(_requestData),
+                    _requestData.Id)
+                .WriteTo(writer);
+
+            writer.WriteEndElement();
+
+            writer.WriteEndElement();
         }
         
         #endregion

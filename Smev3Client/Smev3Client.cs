@@ -43,7 +43,9 @@ namespace Smev3Client
 
             var envelopeBytes = envelope.Get();
 
-            var str = Encoding.UTF8.GetString(envelopeBytes);
+            var encoding = new UTF8Encoding(true);
+
+            var str = encoding.GetString(envelopeBytes);
 
             var content = new ByteArrayContent(
                 envelopeBytes, 0, envelopeBytes.Length);

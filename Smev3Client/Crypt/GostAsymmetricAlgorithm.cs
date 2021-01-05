@@ -15,6 +15,13 @@ namespace Smev3Client.Crypt
 
         private readonly Lazy<byte[]> _certRawData;
 
+        static GostAsymmetricAlgorithm()
+        {
+            CryptoConfig.AddAlgorithm(typeof(GostAsymmetricAlgorithm), "Smev3Signature");
+            CryptoConfig.AddAlgorithm(typeof(GostSignatureDescription), "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256");
+            CryptoConfig.AddAlgorithm(typeof(GostR3411_2012_256HashAlgorithm), "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256");
+        }
+
         protected GostAsymmetricAlgorithm() 
         {
             _certRawData = new Lazy<byte[]>(() => GetCertRawData());

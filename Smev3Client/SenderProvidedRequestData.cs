@@ -7,15 +7,40 @@ namespace Smev3Client
 {
     public class SenderProvidedRequestData: IXmlSerializable
     {
-        public SenderProvidedRequestData(Guid messageId)
+        public SenderProvidedRequestData()
+        {
+
+        }
+
+        public SenderProvidedRequestData(
+            Guid messageId, 
+            string xmlElementId,
+            MessagePrimaryContent content)
         {
             MessageId = messageId;
+
+            Content = content 
+                ?? throw new ArgumentNullException(nameof(content));
+
+            Id = xmlElementId;
         }
+
+        /// <summary>
+        /// Атрибут Id xml элемента
+        /// </summary>
+        public string Id { get; }
 
         /// <summary>
         /// Ид. сообщения
         /// </summary>
         Guid MessageId { get; }
+
+        /// <summary>
+        /// Содержимое
+        /// </summary>
+        MessagePrimaryContent Content { get; }
+
+        public bool TestMessage { get; set; }
 
         #region IXmlSerializable
 
@@ -31,7 +56,20 @@ namespace Smev3Client
 
         public void WriteXml(XmlWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteStartElement("SenderProvidedRequestData", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2);
+
+            writer.WriteAttributeString("Id", Id);
+
+            writer.WriteElementString("MessageID", MessageId.ToString());
+
+            Content.WriteXml(writer);
+
+            if (TestMessage)
+            {
+                writer.WriteElementString("TestMessage", string.Empty);
+            }
+
+            writer.WriteEndElement();
         }
 
         #endregion

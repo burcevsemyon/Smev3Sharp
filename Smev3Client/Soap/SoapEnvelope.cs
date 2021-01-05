@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
-using System.Xml.Schema;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Smev3Client.Soap
@@ -18,7 +16,7 @@ namespace Smev3Client.Soap
 
         public SoapEnvelope()
         {
-            SerializerNamespaces.Add("soap", SoapConsts.SOAP_NAMESPACE);
+            SerializerNamespaces.Add("s", SoapConsts.SOAP_NAMESPACE);
         }
 
         /// <summary>
@@ -26,6 +24,7 @@ namespace Smev3Client.Soap
         /// </summary>
         [XmlElement(ElementName = "Header")]
         public SoapEnvelopeHeader Header { get; set; }
+
         /// <summary>
         /// Тело
         /// </summary>
@@ -36,7 +35,8 @@ namespace Smev3Client.Soap
         {
             using var stream = new MemoryStream();
 
-            using var writer = new StreamWriter(stream, Encoding.UTF8); 
+            using var writer = XmlWriter.Create(stream,
+                new XmlWriterSettings { Indent = false, Encoding = new UTF8Encoding(false) }); 
 
             var serializer = new XmlSerializer(GetType());
 

@@ -1,52 +1,50 @@
 ﻿using System;
 using System.Xml;
 
-using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
-using System.Security.Cryptography.X509Certificates;
+
+using Smev3Client.Crypt;
 
 namespace Smev3Client
 {
     public class Smev3XmlSigner : ISmev3XmlSigner
     {
-        public XmlElement SignXmlElement(XmlElement xml, string skid)
+        private readonly GostAsymmetricAlgorithm _algorithm;
+
+        public Smev3XmlSigner(GostAsymmetricAlgorithm algorithm)
         {
-            var signedXml = new SignedXml(xml) 
-            { 
-                SigningKey = GetSigningKeyBySkid(skid)
+            _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
+        } 
+
+        public XmlElement SignXmlElement(XmlElement xml, string uri)
+        {
+            var signedXml = new SignedXml(xml)
+            {
+                SigningKey = _algorithm                
             };
 
-            // Create a reference to be signed.
-            Reference reference = new Reference();
-            reference.Uri = "";
+            signedXml.SafeCanonicalizationMethods.Add("urn://smev-gov-ru/xmldsig/transform");
 
-            // Add an enveloped transformation to the reference.            
+            Reference reference = new Reference
+            {
+                Uri = $"#{uri}",
+                DigestMethod = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256"
+            };
+
+            signedXml.AddReference(reference);
+
+            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+            signedXml.SignedInfo.SignatureMethod = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
+
+            signedXml.KeyInfo.AddClause(new KeyInfoX509Data(_algorithm.CertRawData));
+
             reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
             reference.AddTransform(new XmlDsigExcC14NTransform());
             reference.AddTransform(new XmlDsigSmevTransform());
 
-            // Add the reference to the SignedXml object.
-            signedXml.AddReference(reference);
-
             signedXml.ComputeSignature();
 
             return signedXml.GetXml();
-        }
-
-        private AsymmetricAlgorithm GetSigningKeyBySkid(string skid)
-        {
-            if (string.IsNullOrWhiteSpace(skid))
-                throw new ArgumentException("Идентификатор ключа субъекта не может быть пустой строкой.", nameof(skid));
-
-            using var store = new X509Store(StoreName.My, StoreLocation.LocalMachine, OpenFlags.ReadOnly);
-
-            var cert = store.Certificates.Find(X509FindType.FindByThumbprint, skid, false);
-            if(cert.Count == 0)
-            {
-                throw new Exception($"Сертификат с идентификатором ключа субъекта {skid} не найден.");
-            }
-
-            return cert[0].PrivateKey;
         }
     }
 }
