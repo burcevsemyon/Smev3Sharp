@@ -13,9 +13,11 @@ namespace Smev3Client
 
         private XmlDocument _inputDocument;
 
+        public const string ALGORITHM = "urn://smev-gov-ru/xmldsig/transform";
+
         public XmlDsigSmevTransform()
         {
-            Algorithm = "urn://smev-gov-ru/xmldsig/transform";
+            Algorithm = ALGORITHM;
         }
 
         public override Type[] InputTypes => _inputOutputTypes;
@@ -152,8 +154,6 @@ namespace Smev3Client
                         namespaceStack,
                         ref nsIndex);               
             }
-
-            //outDocument.Save("dd.xml");
 
             return outDocument;
         }

@@ -6,11 +6,17 @@ using System.Xml.Serialization;
 
 namespace Smev3Client
 {
-    public class MessagePrimaryContent : IXmlSerializable
+    public class MessagePrimaryContent<T> : 
+        IXmlSerializable where T: new()
     {
-        public MessagePrimaryContent()
-        {            
-        }        
+        public MessagePrimaryContent(){}
+
+        public MessagePrimaryContent(T content)
+        {
+            Content = content;
+        }
+
+        public T Content { get; set; }
 
         #region IXmlSerializable
 
@@ -23,30 +29,11 @@ namespace Smev3Client
         {
             throw new NotImplementedException();
         }
-
-        public virtual void WriteXml(XmlWriter writer)
+        
+        public void WriteXml(XmlWriter writer)
         {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-    }
-
-    public class MessagePrimaryContent2<T> : MessagePrimaryContent where T: new()
-    {
-        public MessagePrimaryContent2(){}
-
-        public MessagePrimaryContent2(T content)
-        {
-            Content = content;
-        }
-
-        public T Content { get; set; }
-
-        #region IXmlSerializable
-        public override void WriteXml(XmlWriter writer)
-        {
-            writer.WriteStartElement("MessagePrimaryContent", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);
+            writer.WriteStartElement("MessagePrimaryContent", 
+                Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);
 
             Smev3XmlSerializer.ToXmlElement(Content)
                 .WriteTo(writer);

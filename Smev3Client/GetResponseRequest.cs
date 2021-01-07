@@ -1,46 +1,43 @@
-﻿using System;
+﻿using Smev3Client.Soap;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 
-using Smev3Client.Soap;
-
 namespace Smev3Client
 {
-    /// <summary>
-    /// Тело метода SendRequest
-    /// </summary>
-    public class SendRequestRequest<T>:         
+    public class GetResponseRequest :
         ISoapEnvelopeBody,
-        ISmev3Envelope 
-        where T : new()
+        ISmev3Envelope        
     {
         #region members
 
         private readonly ISmev3XmlSigner _signer;
 
-        private readonly SenderProvidedRequestData<T> _requestData;
+        private readonly MessageTypeSelector _requestData;
 
-        private readonly SoapEnvelope<SendRequestRequest<T>> _soapEnvelope;
+        private readonly SoapEnvelope<GetResponseRequest> _soapEnvelope;
 
         #endregion
 
-        public SendRequestRequest()
+        public GetResponseRequest()
         {
         }
 
-        public SendRequestRequest(
-            SenderProvidedRequestData<T> requestData,
+        public GetResponseRequest(
+            MessageTypeSelector requestData,
             ISmev3XmlSigner signer)
         {
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
-            
+
             _requestData = requestData ?? throw new ArgumentNullException(nameof(requestData));
 
-            _soapEnvelope = new SoapEnvelope<SendRequestRequest<T>>
+            _soapEnvelope = new SoapEnvelope<GetResponseRequest>
             {
                 Header = new SoapEnvelopeHeader
                 {
-                    Action = new SoapAction(nameof(Smev3Methods.SendRequest))
+                    Action = new SoapAction(nameof(Smev3Methods.GetResponse))
                 },
                 Body = this
             };
@@ -69,8 +66,8 @@ namespace Smev3Client
 
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteStartElement("SendRequestRequest", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2);
-            
+            writer.WriteStartElement("GetResponseRequest", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2);
+
             _requestData.WriteXml(writer);
 
             writer.WriteStartElement("CallerInformationSystemSignature");
@@ -84,7 +81,7 @@ namespace Smev3Client
 
             writer.WriteEndElement();
         }
-        
+
         #endregion
     }
 }

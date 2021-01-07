@@ -5,7 +5,8 @@ using System.Xml.Serialization;
 
 namespace Smev3Client
 {
-    public class SenderProvidedRequestData: IXmlSerializable
+    public class SenderProvidedRequestData<T>: 
+        IXmlSerializable where T : new()
     {
         public SenderProvidedRequestData()
         {
@@ -15,7 +16,7 @@ namespace Smev3Client
         public SenderProvidedRequestData(
             Guid messageId, 
             string xmlElementId,
-            MessagePrimaryContent content)
+            MessagePrimaryContent<T> content)
         {
             MessageId = messageId;
 
@@ -38,7 +39,7 @@ namespace Smev3Client
         /// <summary>
         /// Содержимое
         /// </summary>
-        MessagePrimaryContent Content { get; }
+        MessagePrimaryContent<T> Content { get; }
 
         public bool TestMessage { get; set; }
 

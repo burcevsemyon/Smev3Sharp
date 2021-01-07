@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Xml;
-
 using System.Security.Cryptography.Xml;
 
-using Smev3Client.Crypt;
-
-namespace Smev3Client
+namespace Smev3Client.Crypt
 {
     public class Smev3XmlSigner : ISmev3XmlSigner
     {
@@ -23,18 +20,18 @@ namespace Smev3Client
                 SigningKey = _algorithm                
             };
 
-            signedXml.SafeCanonicalizationMethods.Add("urn://smev-gov-ru/xmldsig/transform");
+            signedXml.SafeCanonicalizationMethods.Add(XmlDsigSmevTransform.ALGORITHM);
 
             Reference reference = new Reference
             {
                 Uri = $"#{uri}",
-                DigestMethod = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256"
+                DigestMethod = XmlDsigConsts.XmlDsigGost3411_2012_256Url
             };
 
             signedXml.AddReference(reference);
 
             signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
-            signedXml.SignedInfo.SignatureMethod = "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
+            signedXml.SignedInfo.SignatureMethod = XmlDsigConsts.XmlDsigGost3410_2012_256Url;
 
             signedXml.KeyInfo.AddClause(new KeyInfoX509Data(_algorithm.CertRawData));
 

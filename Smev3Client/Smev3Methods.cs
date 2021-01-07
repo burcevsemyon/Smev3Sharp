@@ -4,7 +4,10 @@ using System.Text;
 
 namespace Smev3Client
 {
-    public class CallerInformationSystemSignature
+    public enum Smev3Methods
     {
+        SendRequest,
+        GetResponse,
+        Ack
     }
 }

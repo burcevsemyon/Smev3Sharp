@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+
 using CAPILite;
 
 namespace Smev3Client.Crypt
@@ -18,8 +19,8 @@ namespace Smev3Client.Crypt
         static GostAsymmetricAlgorithm()
         {
             CryptoConfig.AddAlgorithm(typeof(GostAsymmetricAlgorithm), "Smev3Signature");
-            CryptoConfig.AddAlgorithm(typeof(GostSignatureDescription), "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256");
-            CryptoConfig.AddAlgorithm(typeof(GostR3411_2012_256HashAlgorithm), "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256");
+            CryptoConfig.AddAlgorithm(typeof(GostSignatureDescription), XmlDsigConsts.XmlDsigGost3410_2012_256Url);
+            CryptoConfig.AddAlgorithm(typeof(GostR3411_2012_256HashAlgorithm), XmlDsigConsts.XmlDsigGost3411_2012_256Url);
         }
 
         protected GostAsymmetricAlgorithm() 
@@ -149,7 +150,7 @@ namespace Smev3Client.Crypt
             base.Dispose(disposing);
         }
 
-        public override string SignatureAlgorithm => "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
+        public override string SignatureAlgorithm => XmlDsigConsts.XmlDsigGost3410_2012_256Url;
 
         private unsafe byte[] GetCertRawData()
         {
