@@ -25,7 +25,7 @@ namespace Smev3Client.Crypt
 
         protected GostAsymmetricAlgorithm() 
         {
-            _certRawData = new Lazy<byte[]>(() => GetCertRawData());
+            _certRawData = new Lazy<byte[]>(() => GetCertRawData(), true);
         }
 
         public unsafe GostAsymmetricAlgorithm(string pfxPath, string pfxPassword, string thumbPrint)

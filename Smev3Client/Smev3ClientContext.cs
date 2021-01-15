@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace Smev3Client
 {
 
     public class Smev3ClientContext: ISmev3ClientContext
     {
-        public Smev3ClientContext(Uri serviceUri)
-        {
-            ServiceUri = serviceUri ?? throw new ArgumentNullException(nameof(serviceUri));
-        }
-
-        public Uri ServiceUri { get; }
+        public HttpClient HttpClient { get; set; }
+        
+        public SmevServiceConfig SmevServiceConfig { get; set; }
     }
 }

@@ -1,16 +1,35 @@
 ﻿using System;
+using System.Net.Http;
+using System.Collections.Generic;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Smev3Client.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static void UseSmev3Client(
-            this IServiceCollection serviceCollection,
-            Func<IServiceProvider, ISmev3ClientContext> contextFactory)
+        public static void UseSmev3Client(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<ISmev3Client>((serviceProvider) => new Smev3Client(contextFactory(serviceProvider)));
+            serviceCollection.AddHttpClient("smev", (serviceProvider, httpClient) =>
+            {
+                var config = serviceProvider.GetRequiredService<IConfiguration>();
+
+                httpClient.BaseAddress = new Uri(config["Smev:Url"]);
+            });
+
+            serviceCollection.AddSingleton<ISmev3ClientFactory>((serviceProvider) =>
+            {
+                var config = serviceProvider.GetRequiredService<IConfiguration>();
+
+                var servicesConfigs = config.GetSection("Smev:Services")
+                                                .Get<Dictionary<string, SmevServiceConfig>>();
+
+                var httpClientFactory = serviceProvider
+                                                .GetRequiredService<IHttpClientFactory>();
+
+                return new Smev3ClientFactory(httpClientFactory, servicesConfigs);
+            });
         }
     }
 }

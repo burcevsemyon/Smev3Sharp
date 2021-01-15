@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace Smev3Client
 {
-
-    public class Smev3Client :
+    internal class Smev3Client :
         IDisposable, ISmev3Client
     {
         #region members
@@ -17,17 +16,14 @@ namespace Smev3Client
         /// <summary>
         /// Параметры клиента
         /// </summary>
-        private readonly ISmev3ClientContext _context;
-
-        private readonly HttpClient _httpClient = new HttpClient();
+        private readonly ISmev3ClientContext _context;        
 
         #endregion        
 
         public Smev3Client(ISmev3ClientContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-
-            _httpClient.BaseAddress = _context.ServiceUri;
+            _context = context ?? 
+                throw new ArgumentNullException(nameof(context));            
         }
 
         /// <summary>
@@ -57,7 +53,7 @@ namespace Smev3Client
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var response = await _httpClient.PostAsync(
+            var response = await _context.HttpClient.PostAsync(
                 string.Empty,
                 content,
                 cancellationToken);
@@ -71,8 +67,7 @@ namespace Smev3Client
         #region IDisposable
 
         public void Dispose()
-        {
-            _httpClient.Dispose();
+        {            
         }
 
         #endregion        
