@@ -53,7 +53,9 @@ namespace Smev3Client
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var response = await _context.HttpClient.PostAsync(
+            using var httpClient = _context.HttpClientFactory.CreateClient("smev");
+
+            var response = await httpClient.PostAsync(
                 string.Empty,
                 content,
                 cancellationToken);

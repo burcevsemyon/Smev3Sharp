@@ -39,13 +39,11 @@ namespace Smev3Client
             if (!_serviceConfigs.ContainsKey(mnemonic))
             {
                 throw new ArgumentException($"Сервис с мнемоникой {mnemonic} не зарегистрирован");
-            }
-
-            var httpClient = _httpClientFactory.CreateClient("smev");
+            }            
 
             return new Smev3Client(new Smev3ClientContext
             {
-                HttpClient = httpClient,
+                HttpClientFactory = _httpClientFactory,
                 SmevServiceConfig = new SmevServiceConfig(_serviceConfigs[mnemonic])
             });
         }

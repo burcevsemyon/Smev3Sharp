@@ -42,18 +42,18 @@ namespace Smev3Client.Test
             
         }
 
-        static public IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureHostConfiguration(configHost => {                    
+        //static public IHostBuilder CreateHostBuilder(string[] args) =>
+        //    Host.CreateDefaultBuilder(args)
+        //        .ConfigureHostConfiguration(configHost => {                    
 
-                    configHost.AddJsonFile("appsettings.json", optional: false);
+        //            configHost.AddJsonFile("appsettings.json", optional: false);
 
-                })
-                .ConfigureServices((hostContext, services) => {
+        //        })
+        //        .ConfigureServices((hostContext, services) => {
                     
-                    services.UseSmev3Client();
+        //            services.UseSmev3Client();
 
-                });
+        //        });
                 
 
         //static readonly IServiceCollection _serviceCollection = new ServiceCollection();

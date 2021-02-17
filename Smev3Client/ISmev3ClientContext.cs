@@ -6,9 +6,9 @@ namespace Smev3Client
     public interface ISmev3ClientContext
     {
         /// <summary>
-        /// Клиент http
+        /// Фабрика клиента http
         /// </summary>
-        HttpClient HttpClient { get; set; }
+        IHttpClientFactory HttpClientFactory { get; set; }
 
         /// <summary>
         /// Параметры сервиса СМЭВ
