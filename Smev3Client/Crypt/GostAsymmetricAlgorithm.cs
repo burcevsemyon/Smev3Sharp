@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
@@ -28,9 +29,18 @@ namespace Smev3Client.Crypt
             _certRawData = new Lazy<byte[]>(() => GetCertRawData(), true);
         }
 
+        public override string SignatureAlgorithm => XmlDsigConsts.XmlDsigGost3410_2012_256Url;
+
+        public byte[] CertRawData => _certRawData.Value;
+
         public unsafe GostAsymmetricAlgorithm(string pfxPath, string pfxPassword, string thumbPrint)
          :this()
         {
+            if (string.IsNullOrWhiteSpace(thumbPrint))
+            {
+                throw new ArgumentException("Отпечаток сертификата не может быть пустой строкой");
+            }
+
             var pfxData = File.ReadAllBytes(pfxPath);
 
             try
@@ -43,11 +53,15 @@ namespace Smev3Client.Crypt
                         pbData = new IntPtr(ptr)
                     };
 
-                    _storeHandle = CApiLiteNative.PFXImportCertStore(ref pfxDataBlob, pfxPassword,
-                        CApiLiteConsts.CRYPT_MACHINE_KEYSET | CApiLiteConsts.PKCS12_IMPORT_SILENT);
-                    if (_storeHandle.IsInvalid)
+                    var passwordBytes = Encoding.UTF32.GetBytes(pfxPassword ?? string.Empty);
+                    fixed (byte* ptrPassword = passwordBytes)
                     {
-                        throw new CApiLiteLastErrorException();
+                        _storeHandle = CApiLiteNative.PFXImportCertStore(ref pfxDataBlob, new IntPtr(ptrPassword),
+                            CApiLiteConsts.CRYPT_MACHINE_KEYSET | CApiLiteConsts.PKCS12_IMPORT_SILENT);
+                        if (_storeHandle.IsInvalid)
+                        {
+                            throw new CApiLiteLastErrorException();
+                        }
                     }
                 }
                 
@@ -85,11 +99,16 @@ namespace Smev3Client.Crypt
             }
         }
 
+        /// <summary>
+        /// Подпись хэш
+        /// </summary>
+        /// <param name="hashData"></param>
+        /// <returns></returns>
         public unsafe byte[] CreateHashSignature(byte[] hashData)
         {
             if(hashData == null || hashData.Length == 0)
             {
-                throw new ArgumentException("Отсутствуют данные для создания подписи.");
+                throw new ArgumentException("Отсутствуют hash данные для создания подписи.");
             }
 
             HashSafeHandle hashHandle = null;
@@ -124,18 +143,12 @@ namespace Smev3Client.Crypt
 
                     return signData;
                 }
-            }
-            catch
-            {
-                throw;
-            }
+            }            
             finally
             {
                 hashHandle?.Close();
             }
         }
-
-        public byte[] CertRawData => _certRawData.Value;
 
         protected override void Dispose(bool disposing)
         {
@@ -150,7 +163,7 @@ namespace Smev3Client.Crypt
             base.Dispose(disposing);
         }
 
-        public override string SignatureAlgorithm => XmlDsigConsts.XmlDsigGost3410_2012_256Url;
+        #region private
 
         private unsafe byte[] GetCertRawData()
         {
@@ -200,5 +213,7 @@ namespace Smev3Client.Crypt
 
             return 0xFF;
         }
+
+        #endregion
     }
 }

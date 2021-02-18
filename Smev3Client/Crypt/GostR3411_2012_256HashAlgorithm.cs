@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+
 using CAPILite;
 
 namespace Smev3Client.Crypt
@@ -21,6 +22,11 @@ namespace Smev3Client.Crypt
             }
 
             Initialize();
+        }
+
+        ~GostR3411_2012_256HashAlgorithm()
+        {
+            Dispose(false);
         }
 
         public override int InputBlockSize => 64;

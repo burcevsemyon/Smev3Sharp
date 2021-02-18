@@ -38,11 +38,11 @@ namespace CAPILite
             [In] int nSize,
             [In] IntPtr va_list_arguments);
 
-        [DllImport("capi20.so", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport("capi20.so", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern 
             CertStoreSafeHandle PFXImportCertStore(
             [In] ref CRYPT_DATA_BLOB pPfx,
-            [In, MarshalAs(UnmanagedType.LPWStr)] string szPassword,
+            [In] IntPtr szPassword,
             [In] uint dwFlags);
 
         [DllImport("capi20.so", SetLastError = true)]

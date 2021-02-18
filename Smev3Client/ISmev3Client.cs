@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Smev3Client
@@ -6,11 +7,30 @@ namespace Smev3Client
     public interface ISmev3Client
     {
         /// <summary>
-        /// Отправка пакета СМЭВ3
+        /// Отправка запроса
         /// </summary>
-        /// <param name="envelope"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Smev3ClientResponse> SendAsync(ISmev3Envelope envelope, CancellationToken cancellationToken);        
+        Task<Smev3ClientResponse> SendRequestAsync<T>(T request, CancellationToken cancellationToken) where T: new();
+
+        /// <summary>
+        /// Получение ответа
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<Smev3ClientResponse> GetResponseAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Подтверждение получения ответа
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<Smev3ClientResponse> AckAsync(Guid messageId, CancellationToken cancellationToken);
     }
 }

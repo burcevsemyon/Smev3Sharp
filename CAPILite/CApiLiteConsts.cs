@@ -19,6 +19,7 @@
 
         public const uint FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
         public const uint FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+        public const uint FORMAT_MESSAGE_FROM_HMODULE = 0x00000800;
 
         public const uint PKCS12_IMPORT_SILENT = 0x00000040;
 
