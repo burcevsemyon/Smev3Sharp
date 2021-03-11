@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Smev3Client.Crypt;
 using Smev3Client.Utils;
@@ -54,7 +54,8 @@ namespace Smev3Client
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<Smev3ClientResponse> SendRequestAsync<T>(T request, CancellationToken cancellationToken) where T : new()
+        public Task<Smev3ClientResponse> SendRequestAsync<T>(SendRequestExecutionContext<T> context, 
+                                                                CancellationToken cancellationToken) where T : new()
         {
             ThrowExceptionIfDisposedFlagSetted();
 
@@ -64,9 +65,9 @@ namespace Smev3Client
                     requestData: new SenderProvidedRequestData<T>(
                         messageId: Rfc4122.GenerateUUIDv1(),
                         xmlElementId: "SIGNED_BY_CONSUMER",
-                        content: new MessagePrimaryContent<T>(request)
+                        content: new MessagePrimaryContent<T>(context.RequestData)
                         )
-                    { TestMessage = false },
+                    { TestMessage = context.IsTest },
                     signer: new Smev3XmlSigner(_algorithm)
                 ),
                 cancellationToken
@@ -166,10 +167,7 @@ namespace Smev3Client
                 content,
                 cancellationToken);
 
-            return new Smev3ClientResponse
-            {
-                HttpResponse = response
-            };
+            return new Smev3ClientResponse(response);
         }
 
         /// <summary>

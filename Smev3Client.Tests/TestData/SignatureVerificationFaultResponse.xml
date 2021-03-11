@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <soap:Fault>
+      <faultcode>soap:Server</faultcode>
+      <faultstring>Срок действия сертификата ЭП-ОВ истёк. Сертификат действителен до 2021-02-18 10:07</faultstring>
+      <detail>
+        <ns3:SignatureVerificationFault xmlns:ns3="urn://x-artefacts-smev-gov-ru/services/message-exchange/types/faults/1.2" xmlns:ns2="urn://x-artefacts-smev-gov-ru/services/message-exchange/types/1.2" xmlns="urn://x-artefacts-smev-gov-ru/services/message-exchange/types/basic/1.2">
+          <Code>tsmev3:PRODUCTION_AREA:TSMEV3_CORE2 : TR:SYNC:SPS:4</Code>
+          <Description>SMEV-100:Срок действия сертификата ЭП-ОВ истёк. Сертификат действителен до 2021-02-18 10:07</Description>
+          <ns3:SignatureVerificationFault>CertificateIsExpired</ns3:SignatureVerificationFault>
+        </ns3:SignatureVerificationFault>
+      </detail>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>

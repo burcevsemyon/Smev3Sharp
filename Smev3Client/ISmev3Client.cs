@@ -10,10 +10,11 @@ namespace Smev3Client
         /// Отправка запроса
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
+        /// <param name="context"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<Smev3ClientResponse> SendRequestAsync<T>(T request, CancellationToken cancellationToken) where T: new();
+        Task<Smev3ClientResponse> SendRequestAsync<T>(SendRequestExecutionContext<T> context, 
+                                                            CancellationToken cancellationToken) where T: new();
 
         /// <summary>
         /// Получение ответа

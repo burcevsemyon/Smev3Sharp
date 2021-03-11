@@ -8,12 +8,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client.Test", "Smev3Cl
 		{92A8A458-C93F-4DA5-BB36-9838805EA664} = {92A8A458-C93F-4DA5-BB36-9838805EA664}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smev3Client", "Smev3Client\Smev3Client.csproj", "{92A8A458-C93F-4DA5-BB36-9838805EA664}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client", "Smev3Client\Smev3Client.csproj", "{92A8A458-C93F-4DA5-BB36-9838805EA664}"
 	ProjectSection(ProjectDependencies) = postProject
 		{01C71948-BAD4-491C-A57D-11F0EC5F4023} = {01C71948-BAD4-491C-A57D-11F0EC5F4023}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CAPILite", "CAPILite\CAPILite.csproj", "{01C71948-BAD4-491C-A57D-11F0EC5F4023}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0783FFB9-5B98-4884-829B-BD26389BFD74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smev3Client.Tests", "Smev3Client.Tests\Smev3Client.Tests.csproj", "{117F540D-8837-4DBB-B263-E061EBAD2145}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,16 @@ Global
 		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01C71948-BAD4-491C-A57D-11F0EC5F4023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{117F540D-8837-4DBB-B263-E061EBAD2145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{117F540D-8837-4DBB-B263-E061EBAD2145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{117F540D-8837-4DBB-B263-E061EBAD2145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{117F540D-8837-4DBB-B263-E061EBAD2145}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{117F540D-8837-4DBB-B263-E061EBAD2145} = {0783FFB9-5B98-4884-829B-BD26389BFD74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8E28D8B-BA1C-4ADC-A7FB-7C9A53392676}
