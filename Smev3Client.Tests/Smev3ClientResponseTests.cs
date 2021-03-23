@@ -49,5 +49,20 @@ namespace Smev3Client.Tests
 
             Assert.IsNotNull(errorInfo?.SmevCode);
         }
+
+        [TestMethod]
+        public async Task ReadSendRequestResponse()
+        {
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(File.ReadAllText("TestData/SendRequestResponce.xml"))
+            };
+
+            var smevResponse = new Smev3ClientResponse(httpResponse);
+
+            var errorInfo = await smevResponse.ReadAsSmev3ErrorInfoAsync();
+
+            Assert.IsNotNull(errorInfo?.SmevCode);
+        }
     }
 }

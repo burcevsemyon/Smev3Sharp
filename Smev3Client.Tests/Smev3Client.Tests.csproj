@@ -18,6 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestData\SendRequestResponce.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SignatureVerificationFaultResponse.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

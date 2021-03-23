@@ -1,9 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
+using Smev3Client.Http;
 using Smev3Client.Soap;
 
 namespace Smev3Client
@@ -25,17 +24,16 @@ namespace Smev3Client
         /// </summary>
         public HttpResponseMessage HttpResponse { get; private set; }
 
+        /// <summary>
+        /// Чтение объекта с причиной ошибки, передаваемой через SOAP fault
+        /// </summary>
+        /// <returns></returns>
         public async Task<Smev3ErrorInfo> ReadAsSmev3ErrorInfoAsync()
         {
-            var xml = await HttpResponse.Content.ReadAsStringAsync();
+            var soapFault = await HttpResponse.Content
+                .ReadContentSoapBodyAsAsync<SoapFault>();
 
-            using var reader = new StringReader(xml);
-
-            var serializer = new XmlSerializer(typeof(SoapEnvelope<SoapFault>));
-            
-            var soapFault = (SoapEnvelope<SoapFault>)serializer.Deserialize(reader);
-
-            return soapFault?.Body == null ? null : new Smev3ErrorInfo(soapFault?.Body);
+            return new Smev3ErrorInfo(soapFault);
         }
 
         #region IDisposable
