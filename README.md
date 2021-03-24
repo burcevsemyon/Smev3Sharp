@@ -18,7 +18,7 @@ Microsoft.AspNet.WebApi.Client 5.2.7
 
 **Конфигурирование через appsettings.json:**
 
-```
+```json
 {
   "Smev": {
     "Url": "http://smev3-n0.test.gosuslugi.ru:7500/smev/v1.2/ws",
