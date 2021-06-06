@@ -14,10 +14,10 @@ namespace Smev3Client
             HttpResponse = response ?? throw new ArgumentNullException(nameof(response));            
         }
 
-        /// <summary>
-        /// Признак ответа с ошибкой
-        /// </summary>
-        public bool IsErrorResponse => HttpResponse.StatusCode == System.Net.HttpStatusCode.InternalServerError;
+        ~Smev3ClientResponse()
+        {
+            Dispose(false);
+        }
 
         /// <summary>
         /// Http ответ СМЭВ
@@ -25,20 +25,26 @@ namespace Smev3Client
         public HttpResponseMessage HttpResponse { get; private set; }
 
         /// <summary>
-        /// Чтение объекта с причиной ошибки, передаваемой через SOAP fault
+        /// Чтение элемента Body содержимого ответа как тип T
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<Smev3ErrorInfo> ReadAsSmev3ErrorInfoAsync()
+        public Task<T> ReadContentSoapBodyAsAsync<T>()
+            where T : ISoapEnvelopeBody, new()
         {
-            var soapFault = await HttpResponse.Content
-                .ReadContentSoapBodyAsAsync<SoapFault>();
-
-            return new Smev3ErrorInfo(soapFault);
+            return HttpResponse.Content.ReadContentSoapBodyAsAsync<T>();
         }
 
         #region IDisposable
 
         public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool _)
         {
             HttpResponse?.Dispose();
             HttpResponse = null;
@@ -50,5 +56,20 @@ namespace Smev3Client
 
 
         #endregion
+    }
+
+    public class Smev3ClientResponse<T> : Smev3ClientResponse
+        where T : ISoapEnvelopeBody, new()
+    {
+        /// <summary>
+        /// Десериализованный объект
+        /// </summary>
+        public T Data { get; private set; }
+
+        public Smev3ClientResponse(HttpResponseMessage response, T data) 
+            : base(response)
+        {
+            Data = data;
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Xml.Schema;
 
 using Smev3Client.Soap;
 
-namespace Smev3Client
+namespace Smev3Client.Smev
 {
     /// <summary>
     /// Тело метода SendRequest

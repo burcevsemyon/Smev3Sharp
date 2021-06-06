@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace Smev3Client
+namespace Smev3Client.Smev
 {
     /// <summary>
     //Селектор, с помощью которого при приёме запроса или ответа

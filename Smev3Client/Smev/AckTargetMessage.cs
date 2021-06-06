@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-namespace Smev3Client
+namespace Smev3Client.Smev
 {
     ///<summary>
     /// Ссылка на сообщение, получение которого подтверждается методом Ack.

@@ -4,7 +4,7 @@ using System.Security.Cryptography.Xml;
 
 namespace Smev3Client.Crypt
 {
-    public class Smev3XmlSigner : ISmev3XmlSigner
+    internal class Smev3XmlSigner : ISmev3XmlSigner
     {
         private readonly GostAsymmetricAlgorithm _algorithm;
 

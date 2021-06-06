@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace Smev3Client
+namespace Smev3Client.Smev
 {
     public class GetResponseRequest :
         ISoapEnvelopeBody,

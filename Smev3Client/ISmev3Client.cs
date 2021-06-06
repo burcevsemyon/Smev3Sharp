@@ -2,6 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using Smev3Client.Smev;
+using Smev3Client.Soap;
+
 namespace Smev3Client
 {
     public interface ISmev3Client
@@ -10,27 +13,25 @@ namespace Smev3Client
         /// Отправка запроса
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="context"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="context">Параметры методы</param>
+        /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        Task<Smev3ClientResponse> SendRequestAsync<T>(SendRequestExecutionContext<T> context, 
-                                                            CancellationToken cancellationToken) where T: new();
+        Task<Smev3ClientResponse<SendRequestResponse>> SendRequestAsync<T>(SendRequestExecutionContext<T> context,
+                                                            CancellationToken cancellationToken)
+            where T : new();
 
         /// <summary>
         /// Получение ответа
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         Task<Smev3ClientResponse> GetResponseAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Подтверждение получения ответа
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="messageId">Ид. подтверждаемого сообщения</param>
+        /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         Task<Smev3ClientResponse> AckAsync(Guid messageId, CancellationToken cancellationToken);
     }

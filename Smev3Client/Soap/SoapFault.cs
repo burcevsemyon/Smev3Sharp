@@ -1,8 +1,10 @@
 ﻿using System.Xml;
 using System.Xml.Schema;
 
+using Smev3Client.Smev;
+
 namespace Smev3Client.Soap
-{    
+{
     public class SoapFault: ISoapEnvelopeBody
     {
         public string FaultCode { get; set; }

@@ -7,10 +7,10 @@ using Smev3Client.Soap;
 
 namespace Smev3Client.Http
 {
-    public static class HttpContentExtensions
+    internal static class HttpContentExtensions
     {
-        public static async Task<T> ReadContentSoapBodyAsAsync<T>(this HttpContent httpContent) 
-            where T: ISoapEnvelopeBody, new()
+        internal static async Task<T> ReadContentSoapBodyAsAsync<T>(this HttpContent httpContent)
+            where T : ISoapEnvelopeBody, new()
         {
             using var stream = await httpContent.ReadAsStreamAsync();
 

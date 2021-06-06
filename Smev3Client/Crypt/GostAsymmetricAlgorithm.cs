@@ -10,10 +10,11 @@ namespace Smev3Client.Crypt
 {
     public class GostAsymmetricAlgorithm : AsymmetricAlgorithm
     {
+        private readonly uint _keySpec;
+
         private CspSafeHandle _cspHandle;
         private CertStoreSafeHandle _storeHandle;
-        private CertContextSafeHandle _certHandle;
-        private readonly uint _keySpec;
+        private CertContextSafeHandle _certHandle;        
 
         private readonly Lazy<byte[]> _certRawData;
 
@@ -108,7 +109,7 @@ namespace Smev3Client.Crypt
         {
             if(hashData == null || hashData.Length == 0)
             {
-                throw new ArgumentException("Отсутствуют hash данные для создания подписи.");
+                throw new ArgumentException($"Параметр {nameof(hashData)} должен быть не пустым массивом.");
             }
 
             HashSafeHandle hashHandle = null;

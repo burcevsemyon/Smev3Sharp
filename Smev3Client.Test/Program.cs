@@ -16,6 +16,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 
 
+using Smev3Client.Smev;
 using System.Net.Http;
 
 namespace Smev3Client.Test
@@ -69,28 +70,29 @@ namespace Smev3Client.Test
             regCertData.doc.issueId = "160008";
             regCertData.doc.issueDate = "25.12.2015";
 
-            using var response1 = await client.SendRequestAsync(
+            using var sendReqSmevResponse = await client.SendRequestAsync(
                 new SendRequestExecutionContext<ESIARegisterCertificateRequestType>
                 {
                     RequestData = regCertData,
                     IsTest = true
                 }, default);
 
-            var str = await response1.HttpResponse.Content.ReadAsStringAsync();
+            var sendReqResponse = await sendReqSmevResponse.ReadContentSoapBodyAsAsync<SendRequestResponse>();
 
-            using var response2 = await client.GetResponseAsync(default);
-            if(response2.HttpResponse.Content is MultipartContent)
+
+            while (true)
             {
-                str = null;
+                using var response2 = await client.GetResponseAsync(default);
+
+                var multipart = await response2.HttpResponse.Content.ReadAsMultipartAsync();
+
+                var str = await multipart.Contents[0].ReadAsStringAsync();
             }
-            
-            var multipart = await response2.HttpResponse.Content.ReadAsMultipartAsync();
 
-            str = await multipart.Contents[0].ReadAsStringAsync();
 
-            using var response3 = await client.AckAsync(Guid.NewGuid(), default);
+            //using var response3 = await client.AckAsync(Guid.NewGuid(), default);
 
-            str = await response3.HttpResponse.Content.ReadAsStringAsync();
+            //str = await response3.HttpResponse.Content.ReadAsStringAsync();
         }
     }
 }
