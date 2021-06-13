@@ -18,7 +18,7 @@ namespace Smev3Client
             IHttpClientFactory httpClientFactory,
             IDictionary<string, SmevServiceConfig> serviceConfigs)
         {
-            _httpClientFactory = httpClientFactory ?? 
+            _httpClientFactory = httpClientFactory ??
                 throw new ArgumentNullException(nameof(httpClientFactory));
 
             if(serviceConfigs == null || serviceConfigs.Count == 0)

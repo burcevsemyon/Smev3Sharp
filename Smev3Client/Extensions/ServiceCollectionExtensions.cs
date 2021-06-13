@@ -11,7 +11,7 @@ namespace Smev3Client.Extensions
     {
         public static void UseSmev3Client(this IServiceCollection serviceCollection)
         {
-            serviceCollection.AddHttpClient("smev", (serviceProvider, httpClient) =>
+            serviceCollection.AddHttpClient("SmevClient", (serviceProvider, httpClient) =>
             {
                 var config = serviceProvider.GetRequiredService<IConfiguration>();
 

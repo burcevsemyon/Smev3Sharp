@@ -10,13 +10,13 @@ namespace Smev3Client.Smev
     /// <summary>
     /// Маршрутная информация, заполняемая СМЭВ.
     /// </summary>
-    public partial class MessageMetadata : IXmlSerializable
+    public class MessageMetadata : IXmlSerializable
     {
         public Guid? MessageId { get; set; }
 
         public string MessageType { get; set; }
 
-        public string Status { get; set; }        
+        public string Status { get; set; }
 
         /// <summary>
         /// Дата и время отправки сообщения в СМЭВ.

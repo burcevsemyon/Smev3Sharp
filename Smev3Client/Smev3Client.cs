@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Net.Http.Headers;
@@ -37,12 +36,12 @@ namespace Smev3Client
 
         public Smev3Client(ISmev3ClientContext context)
         {
-            _context = context ?? 
+            _context = context ??
                 throw new ArgumentNullException(nameof(context));
 
             _algorithm = new GostAsymmetricAlgorithm(
-                                context.SmevServiceConfig.Container, 
-                                context.SmevServiceConfig.Password, 
+                                context.SmevServiceConfig.Container,
+                                context.SmevServiceConfig.Password,
                                 context.SmevServiceConfig.Thumbprint);
         }
 
@@ -51,67 +50,110 @@ namespace Smev3Client
             Dispose(false);
         }
 
-        public async Task<Smev3ClientResponse<SendRequestResponse>> SendRequestAsync<T>(SendRequestExecutionContext<T> context, 
+        /// <summary>
+        /// Отправка запроса
+        /// </summary>
+        /// <typeparam name="TServiceRequest"></typeparam>
+        /// <param name="context">Параметры методы</param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        public async Task<Smev3ClientResponse<SendRequestResponse>> SendRequestAsync<TServiceRequest>(SendRequestExecutionContext<TServiceRequest> context,
                                                                       CancellationToken cancellationToken)
-            where T : new()
+            where TServiceRequest : new()
         {
-            ThrowExceptionIfDisposedFlagSetted();
+            ThrowIfDisposed();
 
-            var httpResponse = await SendAsync(
-                new SendRequestRequest<T>
-                (
-                    requestData: new SenderProvidedRequestData<T>(
-                        messageId: Rfc4122.GenerateUUIDv1(),
-                        xmlElementId: "SIGNED_BY_CONSUMER",
-                        content: new MessagePrimaryContent<T>(context.RequestData)
-                        )
-                    { TestMessage = context.IsTest },
-                    signer: new Smev3XmlSigner(_algorithm)
-                ),
-                cancellationToken
-            );
+            HttpResponseMessage httpResponse = null;
+            try
+            {
+                httpResponse = await SendAsync(
+                    new SendRequestRequest<TServiceRequest>
+                    (
+                        requestData: new SenderProvidedRequestData<TServiceRequest>(
+                            messageId: Rfc4122.GenerateUUIDv1(),
+                            xmlElementId: "SIGNED_BY_CONSUMER",
+                            content: new MessagePrimaryContent<TServiceRequest>(context.RequestData)
+                            )
+                        { TestMessage = context.IsTest },
+                        signer: new Smev3XmlSigner(_algorithm)
+                    ),
+                    cancellationToken
+                )
+                .ConfigureAwait(false);
 
-            var soapEnvelopeBody = await httpResponse
-                                            .Content
-                                            .ReadContentSoapBodyAsAsync<SendRequestResponse>();
+                var soapEnvelopeBody = await httpResponse
+                                                .Content
+                                                .ReadContentSoapBodyAsAsync<SendRequestResponse>(cancellationToken)
+                                                .ConfigureAwait(false);
 
-            return new Smev3ClientResponse<SendRequestResponse>(httpResponse, soapEnvelopeBody);
+                return new Smev3ClientResponse<SendRequestResponse>(httpResponse, soapEnvelopeBody);
+            }
+            catch
+            {
+                httpResponse?.Dispose();
+
+                throw;
+            }
         }
 
         /// <summary>
-        /// Получение ответа
+        /// Получение сообщения из очереди входящих ответов
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
+        /// <param name="namespaceUri"></param>
+        /// <param name="rootElementLocalName"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Smev3ClientResponse> GetResponseAsync(CancellationToken cancellationToken)
+        public async Task<Smev3ClientResponse> GetResponseAsync(Uri namespaceUri, string rootElementLocalName,
+                                                    CancellationToken cancellationToken)
         {
-            ThrowExceptionIfDisposedFlagSetted();
+            ThrowIfDisposed();
 
             var httpResponse = await SendAsync(
                 new GetResponseRequest(
-                    requestData: new MessageTypeSelector
+                    requestData: new MessageTypeSelector(namespaceUri, rootElementLocalName)
                     {
                         Timestamp = DateTime.Now,
                         Id = "SIGNED_BY_CONSUMER"
                     },
                     signer: new Smev3XmlSigner(_algorithm)),
-                cancellationToken);
+                        cancellationToken
+                 )
+                 .ConfigureAwait(false);
 
             return new Smev3ClientResponse(httpResponse);
         }
 
         /// <summary>
-        /// Подтверждение получения ответа
+        /// Получение сообщения из очереди входящих ответов c десереализацией ответа в тип T
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="request"></param>
+        /// <typeparam name="TServiceResponse"></typeparam>
+        /// <param name="namespaceUri"></param>
+        /// <param name="rootElementLocalName"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<Smev3ClientResponse> AckAsync(Guid messageId, CancellationToken cancellationToken)
+        public async Task<Smev3ClientResponse<GetResponseResponse<TServiceResponse>>> GetResponseAsync<TServiceResponse>(Uri namespaceUri, string rootElementLocalName,
+                                                CancellationToken cancellationToken)
+            where TServiceResponse : new()
         {
-            ThrowExceptionIfDisposedFlagSetted();
+            using var response = await GetResponseAsync(namespaceUri, rootElementLocalName, cancellationToken)
+                                        .ConfigureAwait(false);
+
+            var data = await response.ReadContentSoapBodyAsAsync<GetResponseResponse<TServiceResponse>>()
+                                        .ConfigureAwait(false);
+
+            return new Smev3ClientResponse<GetResponseResponse<TServiceResponse>>(response.DetachHttpResponse(), data);
+        }
+
+        /// <summary>
+        /// Подтверждение получения ответа
+        /// </summary>
+        /// <param name="messageId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<Smev3ClientResponse<AckResponse>> AckAsync(Guid messageId, CancellationToken cancellationToken)
+        {
+            ThrowIfDisposed();
 
             var httpResponse = await SendAsync(
                 new AckRequest(
@@ -121,9 +163,13 @@ namespace Smev3Client
                         Id = "SIGNED_BY_CALLER"
                     },
                     signer: new Smev3XmlSigner(_algorithm)),
-                cancellationToken);
+                cancellationToken)
+                .ConfigureAwait(false);
 
-            return new Smev3ClientResponse(httpResponse);
+            var data = await httpResponse.Content.ReadContentSoapBodyAsAsync<AckResponse>(cancellationToken)
+                                        .ConfigureAwait(false);
+
+            return new Smev3ClientResponse<AckResponse>(httpResponse, data);
         }
 
         #region IDisposable
@@ -150,13 +196,14 @@ namespace Smev3Client
         /// <summary>
         /// Отправка конверта
         /// </summary>
-        /// <param name="requestData"></param>
+        /// <param name="envelope"></param>
+        /// <param name="cancellationToken"></param>
         private async Task<HttpResponseMessage> SendAsync(ISmev3Envelope envelope, CancellationToken cancellationToken)
         {
             if (envelope == null)
             {
                 throw new ArgumentNullException(nameof(envelope));
-            }                
+            }
 
             var envelopeBytes = envelope.Get();
 
@@ -168,29 +215,40 @@ namespace Smev3Client
                 CharSet = "utf-8"
             };
 
-            cancellationToken.ThrowIfCancellationRequested();
-
-            using var httpClient = _context.HttpClientFactory.CreateClient("smev");
-
-            var httpResponse = await httpClient.PostAsync(
-                string.Empty,
-                content,
-                cancellationToken);            
-
-            if (httpResponse.StatusCode == HttpStatusCode.InternalServerError)
+            HttpResponseMessage httpResponse = null;
+            try
             {
-                var faultInfo = await httpResponse.Content.ReadContentSoapBodyAsAsync<SoapFault>();
+                using var httpClient = _context.HttpClientFactory.CreateClient("SmevClient");
 
-                throw new Smev3ClientException($"FaultCode: {faultInfo.FaultCode}. FaultString: {faultInfo.FaultString}.");
+                httpResponse = await httpClient.PostAsync(string.Empty, content, cancellationToken)
+                                               .ConfigureAwait(false);
+                
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    return httpResponse;
+                }
+
+                var faultInfo = await httpResponse.Content.ReadContentSoapBodyAsAsync<SoapFault>(cancellationToken)
+                                                  .ConfigureAwait(false);
+
+                throw new Smev3Exception(
+                    $"FaultCode: {faultInfo.FaultCode}. FaultString: {faultInfo.FaultString}.")
+                {
+                    FaultInfo = faultInfo
+                };
             }
+            catch
+            {
+                httpResponse?.Dispose();
 
-            return httpResponse;
+                throw;
+            }
         }
 
         /// <summary>
         /// Бросает исключение если объект утилизирован
         /// </summary>
-        private void ThrowExceptionIfDisposedFlagSetted()
+        private void ThrowIfDisposed()
         {
             if (_disposed)
             {

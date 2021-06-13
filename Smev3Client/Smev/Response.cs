@@ -33,7 +33,7 @@ namespace Smev3Client.Smev
         {
             reader.ReadElementSubtreeContent(
                 "Response", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
-                (responseReader) => 
+                (responseReader) =>
                 {
                     responseReader.ReadElementIfItCurrentOrRequired(
                         "OriginalMessageId", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,

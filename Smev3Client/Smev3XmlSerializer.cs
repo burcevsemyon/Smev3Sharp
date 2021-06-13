@@ -5,14 +5,14 @@ using System.Xml.Serialization;
 
 namespace Smev3Client
 {
-    public class Smev3XmlSerializer
+    public static class Smev3XmlSerializer
     {
         public static XmlElement ToXmlElement<T>(T i) where T: new()
         {
             using var stream = new MemoryStream();
 
-            using var writer = XmlWriter.Create(stream, 
-                new XmlWriterSettings { 
+            using var writer = XmlWriter.Create(stream,
+                new XmlWriterSettings {
                     Indent = false,
                     Encoding = new UTF8Encoding(false),
                     OmitXmlDeclaration = true });

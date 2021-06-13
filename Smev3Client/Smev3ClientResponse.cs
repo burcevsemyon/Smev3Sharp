@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Smev3Client.Http;
@@ -9,9 +10,11 @@ namespace Smev3Client
 {
     public class Smev3ClientResponse : IDisposable
     {
+        protected HttpResponseMessage _httpResponse;
+
         public Smev3ClientResponse(HttpResponseMessage response)
-        {            
-            HttpResponse = response ?? throw new ArgumentNullException(nameof(response));            
+        {
+            _httpResponse = response ?? throw new ArgumentNullException(nameof(response));
         }
 
         ~Smev3ClientResponse()
@@ -20,19 +23,29 @@ namespace Smev3Client
         }
 
         /// <summary>
-        /// Http ответ СМЭВ
+        /// Открепляет HTTP ответ. Далее нельзя вызывать никакие методы объекта кроме Dispose
         /// </summary>
-        public HttpResponseMessage HttpResponse { get; private set; }
+        /// <returns></returns>
+        internal HttpResponseMessage DetachHttpResponse()
+        {
+            var response = _httpResponse;
+
+            _httpResponse = null;
+
+            return response;
+        }
 
         /// <summary>
         /// Чтение элемента Body содержимого ответа как тип T
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public Task<T> ReadContentSoapBodyAsAsync<T>()
+        public Task<T> ReadContentSoapBodyAsAsync<T>(CancellationToken cancellationToken = default)
             where T : ISoapEnvelopeBody, new()
         {
-            return HttpResponse.Content.ReadContentSoapBodyAsAsync<T>();
+            ThrowIfDisposed();
+
+            return _httpResponse.Content.ReadContentSoapBodyAsAsync<T>(cancellationToken);
         }
 
         #region IDisposable
@@ -46,30 +59,22 @@ namespace Smev3Client
 
         private void Dispose(bool _)
         {
-            HttpResponse?.Dispose();
-            HttpResponse = null;
+            _httpResponse?.Dispose();
+            _httpResponse = null;
         }
 
         #endregion
 
         #region private
 
+        private void ThrowIfDisposed()
+        {
+            if(_httpResponse == null)
+            {
+                throw new ObjectDisposedException(nameof(Smev3ClientResponse));
+            }
+        }
 
         #endregion
-    }
-
-    public class Smev3ClientResponse<T> : Smev3ClientResponse
-        where T : ISoapEnvelopeBody, new()
-    {
-        /// <summary>
-        /// Десериализованный объект
-        /// </summary>
-        public T Data { get; private set; }
-
-        public Smev3ClientResponse(HttpResponseMessage response, T data) 
-            : base(response)
-        {
-            Data = data;
-        }
     }
 }

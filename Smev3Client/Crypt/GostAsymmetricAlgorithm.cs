@@ -10,11 +10,13 @@ namespace Smev3Client.Crypt
 {
     public class GostAsymmetricAlgorithm : AsymmetricAlgorithm
     {
+        private const byte SIGN_BUFF_SIZE = 64;
+
         private readonly uint _keySpec;
 
         private CspSafeHandle _cspHandle;
         private CertStoreSafeHandle _storeHandle;
-        private CertContextSafeHandle _certHandle;        
+        private CertContextSafeHandle _certHandle;
 
         private readonly Lazy<byte[]> _certRawData;
 
@@ -25,7 +27,7 @@ namespace Smev3Client.Crypt
             CryptoConfig.AddAlgorithm(typeof(GostR3411_2012_256HashAlgorithm), XmlDsigConsts.XmlDsigGost3411_2012_256Url);
         }
 
-        protected GostAsymmetricAlgorithm() 
+        protected GostAsymmetricAlgorithm()
         {
             _certRawData = new Lazy<byte[]>(() => GetCertRawData(), true);
         }
@@ -65,7 +67,7 @@ namespace Smev3Client.Crypt
                         }
                     }
                 }
-                
+
                 var thumbPrintData = DecodeHexString(thumbPrint);
 
                 fixed (byte* ptr = thumbPrintData)
@@ -84,7 +86,7 @@ namespace Smev3Client.Crypt
                         throw new CApiLiteLastErrorException();
                     }
                 }
-                
+
                 bool callerFreeProvider = false;
                 if (!CApiLiteNative.CryptAcquireCertificatePrivateKey(
                     _certHandle, CApiLiteConsts.CRYPT_ACQUIRE_USE_PROV_INFO_FLAG,
@@ -129,7 +131,7 @@ namespace Smev3Client.Crypt
                         throw new CApiLiteLastErrorException();
                     }
 
-                    var signData = new byte[64];
+                    var signData = new byte[SIGN_BUFF_SIZE];
                     int signDataLen = signData.Length;
 
                     fixed (byte* ptrSignData = signData)
@@ -144,7 +146,7 @@ namespace Smev3Client.Crypt
 
                     return signData;
                 }
-            }            
+            }
             finally
             {
                 hashHandle?.Close();
@@ -171,7 +173,7 @@ namespace Smev3Client.Crypt
             if(_certHandle == null || _certHandle.IsInvalid)
             {
                 throw new Exception("Объект не инициалирован.");
-            }            
+            }
 
             var certContext = Marshal.PtrToStructure<CERT_CONTEXT>(
                                                     _certHandle.DangerousGetHandle());

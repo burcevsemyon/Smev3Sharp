@@ -29,7 +29,7 @@ namespace Smev3Client.Xml
                 if (!reader.IsEmptyElement)
                 {
                     reader.ReadEndElement();
-                }                
+                }
             }
         }
     }

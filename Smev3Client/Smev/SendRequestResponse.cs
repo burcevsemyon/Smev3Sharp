@@ -10,7 +10,7 @@ namespace Smev3Client.Smev
     /// Возвращаемое значение метода "Послать запрос": запрос принят.
     /// Если запрос не может быть принят, информация о причине отказа передаётся через SOAP fault, см.WSDL-описание сервиса.
     /// </summary>
-    public partial class SendRequestResponse: ISoapEnvelopeBody
+    public class SendRequestResponse: ISoapEnvelopeBody
     {
         /// <summary>
         /// Данные о сообщении: ID, присвоенный СМЭВ, дата приёма по часам СМЭВ, результат маршрутизации, etc.

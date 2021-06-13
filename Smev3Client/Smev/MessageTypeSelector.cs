@@ -16,12 +16,38 @@ namespace Smev3Client.Smev
     /// </summary>
     public class MessageTypeSelector : IXmlSerializable
     {
+        public MessageTypeSelector()
+        {
+
+        }
+
+        public MessageTypeSelector(Uri namespaceURI, string rootElementLocalName)
+        {
+            if (!string.IsNullOrWhiteSpace(namespaceURI?.OriginalString) || !string.IsNullOrWhiteSpace(rootElementLocalName))
+            {
+                var paramName = string.IsNullOrWhiteSpace(namespaceURI?.OriginalString) ? nameof(namespaceURI) 
+                    : string.IsNullOrWhiteSpace(rootElementLocalName) ? nameof(rootElementLocalName) : null;
+
+                if (!string.IsNullOrWhiteSpace(paramName))
+                {
+                    throw new ArgumentException("Требуется указывать оба параметра. namespaceURI и rootElementLocalName", paramName);
+                }
+            }
+
+            NamespaceURI = namespaceURI;
+            RootElementLocalName = rootElementLocalName;
+        }
+
         /// <summary>
         /// Текущая дата и время.
         /// </summary>
         public DateTime Timestamp { get; set; }
 
         public string Id { get; set; }
+
+        public Uri NamespaceURI { get; set; }
+
+        public string RootElementLocalName { get; set; }
 
         public XmlSchema GetSchema()
         {
@@ -38,6 +64,16 @@ namespace Smev3Client.Smev
             writer.WriteStartElement("MessageTypeSelector", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);
 
             writer.WriteAttributeString("Id", Id);
+
+            if (!string.IsNullOrWhiteSpace(NamespaceURI?.OriginalString))
+            {
+                writer.WriteElementString("NamespaceURI", NamespaceURI.OriginalString);
+            }
+
+            if (!string.IsNullOrWhiteSpace(RootElementLocalName))
+            {
+                writer.WriteElementString("RootElementLocalName", RootElementLocalName);
+            }
 
             writer.WriteElementString("Timestamp", Timestamp.ToString("yyyy-MM-ddTHH:mm:ssZ"));
 

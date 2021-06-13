@@ -7,7 +7,7 @@ using Smev3Client.Xml;
 
 namespace Smev3Client.Smev
 {
-    public class MessagePrimaryContent<T> : 
+    public class MessagePrimaryContent<T> :
         IXmlSerializable where T: new()
     {
         public MessagePrimaryContent(){}
@@ -32,17 +32,26 @@ namespace Smev3Client.Smev
                 "MessagePrimaryContent", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2, required: true,
                 (contentReader) =>
                 {
-                    var serializer = new XmlSerializer(typeof(T));
+                    if(typeof(T) == typeof(MessagePrimaryContentXml))
+                    {
+                        var content = new T();
 
-                    var serviceResponse = (T)serializer.Deserialize(contentReader);
+                        ((IXmlSerializable)content).ReadXml(contentReader);
 
-                    Content = serviceResponse;
+                        Content = content;
+                    }
+                    else
+                    {
+                        var serializer = new XmlSerializer(typeof(T));
+
+                        Content = (T)serializer.Deserialize(contentReader);
+                    }
                 });
         }
-        
+
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteStartElement("MessagePrimaryContent", 
+            writer.WriteStartElement("MessagePrimaryContent",
                 Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);
 
             Smev3XmlSerializer.ToXmlElement(Content)

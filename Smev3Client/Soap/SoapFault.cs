@@ -2,18 +2,17 @@
 using System.Xml.Schema;
 
 using Smev3Client.Smev;
+using Smev3Client.Xml;
 
 namespace Smev3Client.Soap
 {
     public class SoapFault: ISoapEnvelopeBody
     {
         public string FaultCode { get; set; }
-        
+
         public string FaultString { get; set; }
 
-        public string DetailCode { get; set; }
-
-        public string DetailDescription { get; set; }
+        public string DetailXmlFragment { get; set; }
 
         public XmlSchema GetSchema()
         {
@@ -22,35 +21,22 @@ namespace Smev3Client.Soap
 
         public void ReadXml(XmlReader reader)
         {
-            reader.ReadStartElement("Body", SoapConsts.SOAP_NAMESPACE);
-            reader.ReadStartElement("Fault", SoapConsts.SOAP_NAMESPACE);
-            
-            FaultCode = reader.ReadElementContentAsString("faultcode", string.Empty);
-            FaultString = reader.ReadElementContentAsString("faultstring", string.Empty);
-
-            if (reader.IsStartElement("detail"))
+            reader.ReadElementSubtreeContent("Body", SoapConsts.SOAP_NAMESPACE, required: true,
+            (bodyReader) =>
             {
-                using var inner = reader.ReadSubtree();
-
-                if (inner.Read())
+                bodyReader.ReadElementSubtreeContent("Fault", SoapConsts.SOAP_NAMESPACE, required: true,
+                (faultReader) =>
                 {
-                    inner.ReadStartElement();
+                    FaultCode = faultReader.ReadElementContentAsString("faultcode", string.Empty);
+                    FaultString = faultReader.ReadElementContentAsString("faultstring", string.Empty);
 
-                    if (inner.NamespaceURI.Equals(Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_FAULTS_1_2))
+                    faultReader.ReadElementIfItCurrentOrRequired("detail", string.Empty, required: false,
+                    (detailReader) =>
                     {
-                        inner.ReadStartElement();
-
-                        DetailCode = inner.ReadElementContentAsString("Code", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);
-                        DetailDescription = inner.ReadElementContentAsString("Description", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);                       
-                    }
-                }
-
-                reader.Skip();
-                reader.ReadEndElement();
-            }
-            
-            reader.ReadEndElement();
-            reader.ReadEndElement();
+                        DetailXmlFragment = detailReader.ReadOuterXml();
+                    });
+                });
+            });
         }
 
         public void WriteXml(XmlWriter writer)

@@ -24,7 +24,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var soapFault = await smevResponse.ReadContentSoapBodyAsAsync<SoapFault>();
+            var soapFault = await smevResponse.ReadContentSoapBodyAsAsync<SoapFault>().ConfigureAwait(false);
 
             Assert.IsNotNull(soapFault.FaultString);
         }
@@ -39,9 +39,9 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var soapFault = await smevResponse.ReadContentSoapBodyAsAsync<SoapFault>();
+            var soapFault = await smevResponse.ReadContentSoapBodyAsAsync<SoapFault>().ConfigureAwait(false);
 
-            Assert.IsNotNull(soapFault.DetailCode);
+            Assert.IsNotNull(soapFault.DetailXmlFragment);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<SendRequestResponse>();
+            var response = await smevResponse.ReadContentSoapBodyAsAsync<SendRequestResponse>().ConfigureAwait(false);
 
             Assert.IsNotNull(response.MessageMetadata.MessageId);
         }
@@ -69,7 +69,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<SendRequestResponse>();
+            var response = await smevResponse.ReadContentSoapBodyAsAsync<SendRequestResponse>().ConfigureAwait(false);
 
             Assert.AreEqual("requestIsQueued", response.MessageMetadata.Status);
         }
@@ -84,7 +84,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>();
+            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>().ConfigureAwait(false);
 
             Assert.IsNotNull(response.ResponseMessage?.Response?.SenderProvidedResponseData?.ProcessingStatus?.Fault);
         }
@@ -99,7 +99,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>();
+            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>().ConfigureAwait(false);
 
             Assert.IsNotNull(response.ResponseMessage?.Response?.SenderProvidedResponseData?.MessagePrimaryContent?.Content);
         }
@@ -114,7 +114,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>();
+            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>().ConfigureAwait(false);
 
             Assert.IsNull(response.ResponseMessage.Response.SenderProvidedResponseData.MessagePrimaryContent);
         }
@@ -129,7 +129,7 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>();
+            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>().ConfigureAwait(false);
 
             Assert.IsNull(response.ResponseMessage.Response);
         }

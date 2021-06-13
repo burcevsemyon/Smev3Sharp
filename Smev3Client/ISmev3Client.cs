@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Smev3Client.Smev;
-using Smev3Client.Soap;
 
 namespace Smev3Client
 {
@@ -12,20 +11,37 @@ namespace Smev3Client
         /// <summary>
         /// Отправка запроса
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="context">Параметры методы</param>
+        /// <typeparam name="TServiceRequest"></typeparam>
+        /// <param name="context">Параметры метода</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        Task<Smev3ClientResponse<SendRequestResponse>> SendRequestAsync<T>(SendRequestExecutionContext<T> context,
-                                                            CancellationToken cancellationToken)
-            where T : new();
+        Task<Smev3ClientResponse<SendRequestResponse>> SendRequestAsync<TServiceRequest>(
+            SendRequestExecutionContext<TServiceRequest> context, CancellationToken cancellationToken)
+
+            where TServiceRequest : new();
 
         /// <summary>
-        /// Получение ответа
+        /// Получение сообщения из очереди входящих ответов
         /// </summary>
+        /// <param name="namespaceUri"></param>
+        /// <param name="rootElementLocalName"></param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        Task<Smev3ClientResponse> GetResponseAsync(CancellationToken cancellationToken);
+        Task<Smev3ClientResponse> GetResponseAsync(Uri namespaceUri, string rootElementLocalName, 
+                                            CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Получение сообщения из очереди входящих ответов c десереализацией ответа в тип T
+        /// </summary>
+        /// <typeparam name="TServiceResponse"></typeparam>
+        /// <param name="namespaceUri"></param>
+        /// <param name="rootElementLocalName"></param>
+        /// <param name="cancellationToken">Токен отмены</param>
+        /// <returns></returns>
+        Task<Smev3ClientResponse<GetResponseResponse<TServiceResponse>>> GetResponseAsync<TServiceResponse>(
+            Uri namespaceUri, string rootElementLocalName, CancellationToken cancellationToken)
+
+            where TServiceResponse : new();
 
         /// <summary>
         /// Подтверждение получения ответа
@@ -33,6 +49,6 @@ namespace Smev3Client
         /// <param name="messageId">Ид. подтверждаемого сообщения</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        Task<Smev3ClientResponse> AckAsync(Guid messageId, CancellationToken cancellationToken);
+        Task<Smev3ClientResponse<AckResponse>> AckAsync(Guid messageId, CancellationToken cancellationToken);
     }
 }

@@ -23,7 +23,7 @@ namespace Smev3Client.Smev
         /// <summary>
         /// Содержательная часть ответа, XML-документ.
         /// </summary>
-        public MessagePrimaryContent<T> MessagePrimaryContent { get; set; }    
+        public MessagePrimaryContent<T> MessagePrimaryContent { get; set; }
 
         #region IXmlSerializable
 
@@ -37,18 +37,18 @@ namespace Smev3Client.Smev
             reader.ReadElementSubtreeContent(
                 "SenderProvidedResponseData", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
                 (respReader) =>
-                {   
+                {
                     respReader.ReadElementIfItCurrentOrRequired(
                         "MessageID", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
                         (r) => MessageID = Guid.Parse(r.ReadElementContentAsString()));
-                    
+
                     respReader.ReadElementIfItCurrentOrRequired(
                         "To", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
                         (r) => r.Skip());
 
                     respReader.ReadElementIfItCurrentOrRequired(
                         "MessagePrimaryContent", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2, required: false,
-                        (r) => 
+                        (r) =>
                         {
                             var msgPrimaryContent = new MessagePrimaryContent<T>();
 
@@ -86,7 +86,7 @@ namespace Smev3Client.Smev
 
                             status.ReadXml(r);
 
-                            ProcessingStatus = status;                          
+                            ProcessingStatus = status;
                         });
                 });
         }

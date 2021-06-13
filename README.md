@@ -1,6 +1,6 @@
 # Smev3Sharp
 
-Частичная реализация HTTP клиента для СМЭВ3 (версии схем 1.2) с поддержкой подписи xml средствами СКЗИ КРИПТО-ПРО для Linux
+Частичная реализация HTTP клиента для СМЭВ 3 (версии схем 1.2) с поддержкой подписи XML средствами СКЗИ КРИПТО-ПРО для Linux
 
 **Реализованные методы:**
 1. SendRequest
@@ -11,10 +11,10 @@
 
 .NET Standard 2.1  
 System.Security.Cryptography.Xml 5.0.0  
+System.Net.Http.Formatting.Extension 5.2.3  
 Microsoft.Extensions.Http 5.0.0  
 Microsoft.Extensions.DependencyInjection.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Abstractions 5.0.0  
-Microsoft.AspNet.WebApi.Client 5.2.7
 
 **Конфигурирование через appsettings.json:**
 
