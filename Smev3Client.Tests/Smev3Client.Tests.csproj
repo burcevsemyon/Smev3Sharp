@@ -24,6 +24,9 @@
     <None Update="TestData\GetResponseResponce_InvalidContent.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestData\GetResponseResponce_MultipartEmptyQueue.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\GetResponseResponse_ValidResponse.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

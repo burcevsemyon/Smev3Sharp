@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client.Test", "Smev3Client.Test\Smev3Client.Test.csproj", "{F340829B-9DF9-4441-9FF5-EFC24F03D80C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{92A8A458-C93F-4DA5-BB36-9838805EA664} = {92A8A458-C93F-4DA5-BB36-9838805EA664}
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client", "Smev3Client\Smev3Client.csproj", "{92A8A458-C93F-4DA5-BB36-9838805EA664}"
 	ProjectSection(ProjectDependencies) = postProject
 		{01C71948-BAD4-491C-A57D-11F0EC5F4023} = {01C71948-BAD4-491C-A57D-11F0EC5F4023}
@@ -17,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CAPILite", "CAPILite\CAPILi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0783FFB9-5B98-4884-829B-BD26389BFD74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smev3Client.Tests", "Smev3Client.Tests\Smev3Client.Tests.csproj", "{117F540D-8837-4DBB-B263-E061EBAD2145}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client.Tests", "Smev3Client.Tests\Smev3Client.Tests.csproj", "{117F540D-8837-4DBB-B263-E061EBAD2145}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F340829B-9DF9-4441-9FF5-EFC24F03D80C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92A8A458-C93F-4DA5-BB36-9838805EA664}.Release|Any CPU.ActiveCfg = Release|Any CPU

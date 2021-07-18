@@ -129,7 +129,33 @@ namespace Smev3Client.Tests
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
-            var response = await smevResponse.ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>().ConfigureAwait(false);
+            var response = await smevResponse
+                .ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>()
+                .ConfigureAwait(false);
+
+            Assert.IsNull(response.ResponseMessage.Response);
+        }
+
+        [TestMethod]
+        public async Task ReadGetResponseResponse_MultipartEmptyQueue()
+        {
+            var content = new StringContent(File.ReadAllText("TestData/GetResponseResponce_MultipartEmptyQueue.xml"));
+
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/related");
+            
+            content.Headers.ContentType.Parameters.Add(
+                new System.Net.Http.Headers.NameValueHeaderValue("boundary", "f438a15e-9b5b-491f-9b47-aba4d00b8837"));
+
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = content
+            };
+
+            var smevResponse = new Smev3ClientResponse(httpResponse);
+
+            var response = await smevResponse
+                .ReadContentSoapBodyAsAsync<GetResponseResponse<FakeSmevServiceResponse>>()
+                .ConfigureAwait(false);
 
             Assert.IsNull(response.ResponseMessage.Response);
         }
