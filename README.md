@@ -15,6 +15,7 @@ System.Net.Http.Formatting.Extension 5.2.3
 Microsoft.Extensions.Http 5.0.0  
 Microsoft.Extensions.DependencyInjection.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Abstractions 5.0.0  
+Microsoft.Extensions.Configuration.Binder 5.0.0  
 
 **Конфигурирование через appsettings.json:**
 

@@ -11,13 +11,13 @@ namespace Smev3Client.Crypt
         public Smev3XmlSigner(GostAsymmetricAlgorithm algorithm)
         {
             _algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
-        } 
+        }
 
         public XmlElement SignXmlElement(XmlElement xml, string uri)
         {
             var signedXml = new SignedXml(xml)
             {
-                SigningKey = _algorithm                
+                SigningKey = _algorithm
             };
 
             signedXml.SafeCanonicalizationMethods.Add(XmlDsigSmevTransform.ALGORITHM);
