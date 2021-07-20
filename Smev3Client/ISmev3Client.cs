@@ -6,7 +6,7 @@ using Smev3Client.Smev;
 
 namespace Smev3Client
 {
-    public interface ISmev3Client
+    public interface ISmev3Client: IDisposable
     {
         /// <summary>
         /// Отправка запроса

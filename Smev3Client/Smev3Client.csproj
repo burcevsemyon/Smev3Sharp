@@ -33,7 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CAPILite\CAPILite.csproj">
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>CAPILite.dll</IncludeAssets>
+      <IncludeAssets>all</IncludeAssets>
     </ProjectReference>
   </ItemGroup>
 
