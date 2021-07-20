@@ -3,6 +3,7 @@ using System.Xml;
 using System.Xml.Schema;
 
 using Smev3Client.Soap;
+using Smev3Client.Xml;
 
 namespace Smev3Client.Smev
 {
@@ -15,7 +16,7 @@ namespace Smev3Client.Smev
         /// <summary>
         /// Данные о сообщении: ID, присвоенный СМЭВ, дата приёма по часам СМЭВ, результат маршрутизации, etc.
         /// </summary>
-        public MessageMetadata MessageMetadata { get; } = new MessageMetadata();
+        public MessageMetadata MessageMetadata { get; set; }
 
         #region IXmlSerializable
 
@@ -26,16 +27,21 @@ namespace Smev3Client.Smev
 
         public void ReadXml(XmlReader reader)
         {
-            reader.ReadStartElement("Body", SoapConsts.SOAP_NAMESPACE);
-            reader.ReadStartElement("SendRequestResponse", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2);
+            reader.ReadElementSubtreeContent(
+                "Body", SoapConsts.SOAP_NAMESPACE, required: true,
+                (bodyReader) =>
+                {
+                    bodyReader.ReadElementSubtreeContent(
+                        "SendRequestResponse", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
+                        (r) =>
+                        {
+                            var messageMetadata = new MessageMetadata();
 
-            MessageMetadata.ReadXml(reader);
+                            messageMetadata.ReadXml(r);
 
-            // SMEVSignature
-            reader.Skip();
-
-            reader.ReadEndElement();
-            reader.ReadEndElement();
+                            MessageMetadata = messageMetadata;
+                        });
+                });
         }
 
         public void WriteXml(XmlWriter writer)
