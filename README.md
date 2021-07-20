@@ -83,6 +83,7 @@ namespace Smev3ClientExample
 ```csharp
 namespace Smev3ClientExample
 {
+    // параметры запроса сервиса
     public class SomeSmevServiceRequest
     {
         ...
@@ -95,8 +96,7 @@ namespace Smev3ClientExample
             ...            
 
             using var client = factory.Get("SMEV_SVC_MNEMONIC");
-
-            // запрос к сервису
+            
             var sendingContext = new SendRequestExecutionContext<SomeSmevServiceRequest>
             {
                 IsTest = true,
@@ -107,7 +107,9 @@ namespace Smev3ClientExample
                 }
             };
 
-            using var response = await client.SendRequestAsync(sendingContext, cancellationToken: default);
+            // отправка запроса
+            using var response = await client.SendRequestAsync(sendingContext, cancellationToken: default)
+                                             .ConfigureAwait(false);
 
             Console.WriteLine("Ид. сообщения СМЭВ: {0}", response.Data.MessageMetadata.MessageId);
         }
