@@ -3,9 +3,9 @@
 Частичная реализация HTTP клиента для СМЭВ 3 (версии схем 1.2) с поддержкой подписи XML средствами СКЗИ КРИПТО-ПРО для Linux
 
 **Реализованные методы:**
-1. SendRequest
-2. GetResponse
-3. Ack
+1. SendRequest (Отправка запроса)
+2. GetResponse (Получение ответа из очереди входящих ответов)
+3. Ack (Подтверждение сообщения)
 
 **Зависимости:**
 
@@ -36,5 +36,82 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
       }
     }
   }
+}
+```
+
+**Подключение:**
+
+```csharp
+using System;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+using Smev3Client;
+using Smev3Client.Extensions;
+
+namespace Smev3ClientExample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var configBuilder = new ConfigurationBuilder();
+
+            configBuilder.AddJsonFile("appsettings.json", optional: false);
+
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection
+                .AddSingleton<IConfiguration>(configBuilder.Build())
+                .UseSmev3Client();
+
+            var services = serviceCollection.BuildServiceProvider();
+
+            var factory = services.GetRequiredService<ISmev3ClientFactory>();
+
+            using var client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            ...
+        }
+    }
+}
+```
+
+**Отправка запроса:**
+
+```csharp
+namespace Smev3ClientExample
+{
+    public class SomeSmevServiceRequest
+    {
+        ...
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            ...            
+
+            using var client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            // запрос к сервису
+            var requestData = new SomeSmevServiceRequest()
+            {
+               // инициализация полей
+               ...
+            };
+
+            using var response = await client.SendRequestAsync(new SendRequestExecutionContext<SomeSmevServiceRequest>
+                                                                {
+                                                                    IsTest = true,
+                                                                    RequestData = requestData
+                                                                },
+                                                                cancellationToken: default);
+
+            Console.WriteLine("Ид. сообщения СМЭВ: {0}", response.Data.MessageMetadata.MessageId);
+        }
+    }
 }
 ```
