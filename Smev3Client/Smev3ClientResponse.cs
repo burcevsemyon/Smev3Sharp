@@ -48,6 +48,17 @@ namespace Smev3Client
             return _httpResponse.Content.ReadContentSoapBodyAsAsync<T>(cancellationToken);
         }
 
+        /// <summary>
+        /// Чтение ответа в строку
+        /// </summary>
+        /// <returns></returns>
+        public Task<string> ReadAsStringAsync()
+        {
+            ThrowIfDisposed();
+
+            return _httpResponse.Content.ReadAsStringAsync();
+        }
+
         #region IDisposable
 
         public void Dispose()

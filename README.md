@@ -17,7 +17,10 @@ Microsoft.Extensions.DependencyInjection.Abstractions 5.0.0
 Microsoft.Extensions.Configuration.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Binder 5.0.0  
 
-**Конфигурирование через appsettings.json:**
+* [Конфигурирование](#Конфигурирование-через-appsettings.json)
+* [Подключение](#Подключение)
+
+##### Конфигурирование через appsettings.json:
 
 ```json
 {
@@ -39,7 +42,7 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
 }
 ```
 
-**Подключение:**
+##### Подключение:
 
 ```csharp
 using System;
@@ -94,8 +97,6 @@ namespace Smev3ClientExample
         static void Main(string[] args)
         {
             ...            
-
-            using var client = factory.Get("SMEV_SVC_MNEMONIC");
             
             var sendingContext = new SendRequestExecutionContext<SomeSmevServiceRequest>
             {
@@ -106,6 +107,8 @@ namespace Smev3ClientExample
                     ...
                 }
             };
+
+            using var client = factory.Get("SMEV_SVC_MNEMONIC");
 
             // отправка запроса
             using var response = await client.SendRequestAsync(sendingContext, cancellationToken: default)
