@@ -130,6 +130,10 @@ namespace Smev3ClientExample
 Подобным образом целесообразно работать с ответами СМЭВ в случае если заранее неизвестно по каким типам сведений вернётся ответ сервиса из очереди
 
 ```csharp
+...
+using Smev3Client.Smev;
+...
+
 namespace Smev3ClientExample
 {
     class Program
@@ -147,10 +151,25 @@ namespace Smev3ClientExample
                                                                 cancellationToken: default)
                                                               .ConfigureAwait(false);
 
+            // полное содежимое в виде строки
             string responseRawContent = await response.ReadAsStringAsync()
                                                         .ConfigureAwait(false);
 
             Console.WriteLine("Полное содержимое входящего ответа СМЭВ: {0}", responseRawContent);
+
+            // чтение метаданных и содержательной части ответа в Xml.
+            // классы GetResponseResponse<T>, Response<T>, MessagePrimaryContentXml  описаны в пространстве имён Smev3Client.Smev
+            // класс MessagePrimaryContentXml предназначен для чтения содержательной части ответа сервиса в XmlDocument
+            GetResponseResponse<MessagePrimaryContentXml> smevMetaData = await response.ReadContentSoapBodyAsAsync<GetResponseResponse<MessagePrimaryContentXml>>
+                                                                                        (cancellationToken: default)
+                                                                                        .ConfigureAwait(false);
+
+            Response<MessagePrimaryContentXml> responseContent = smevMetaData.ResponseMessage.Response;
+
+            Console.WriteLine("Ответ ид. {0} на сообщение ид. {1}. Содержимое ответа: {3}",
+                responseContent.MessageMetadata.MessageId,
+                responseContent.OriginalMessageId,
+                responseContent.SenderProvidedResponseData.MessagePrimaryContent.Content.Content.OuterXml);
         }
     }
 }
