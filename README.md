@@ -2,12 +2,12 @@
 
 Частичная реализация HTTP клиента для СМЭВ 3 (версии схем 1.2) с поддержкой подписи XML средствами СКЗИ КРИПТО-ПРО для Linux
 
-##### Реализованные методы:
+#### Реализованные методы:
 1. SendRequest (Отправка запроса)
 2. GetResponse (Получение ответа из очереди входящих ответов)
 3. Ack (Подтверждение сообщения)
 
-##### Зависимости:
+#### Зависимости:
 
 .NET Standard 2.1  
 System.Security.Cryptography.Xml 5.0.0  
@@ -45,7 +45,7 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
 }
 ```
 
-##### Подключение:
+#### Подключение:
 
 ```csharp
 using System;
@@ -84,7 +84,7 @@ namespace Smev3ClientExample
 }
 ```
 
-##### Отправка запроса:
+#### Отправка запроса:
 
 ```csharp
 namespace Smev3ClientExample
@@ -114,8 +114,10 @@ namespace Smev3ClientExample
             using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
             // отправка запроса
-            using Smev3ClientResponse response = await client.SendRequestAsync(sendingContext, cancellationToken: default)
-                                             .ConfigureAwait(false);
+            using Smev3ClientResponse response = await client.SendRequestAsync(
+                                                                sendingContext, 
+                                                                cancellationToken: default)
+                                                              .ConfigureAwait(false);
 
             Console.WriteLine("Ид. сообщения СМЭВ: {0}", response.Data.MessageMetadata.MessageId);
         }
@@ -123,9 +125,9 @@ namespace Smev3ClientExample
 }
 ```
 
-##### Получение нетипизированного ответа:
+#### Получение нетипизированного ответа:
 
-Подобным образом целесообразно работать с ответами СМЭВ в случае если заранее не известно по каким типам сведений вернётся ответ сервиса из очереди
+Подобным образом целесообразно работать с ответами СМЭВ в случае если заранее неизвестно по каким типам сведений вернётся ответ сервиса из очереди
 
 ```csharp
 namespace Smev3ClientExample
@@ -140,8 +142,10 @@ namespace Smev3ClientExample
 
             // получение ответа из очереди
             using Smev3ClientResponse response = await client.GetResponseAsync(
-                                                    namespaceUri: null, rootElementLocalName: null, cancellationToken: default)
-                                              .ConfigureAwait(false);
+                                                                namespaceUri: null,
+                                                                rootElementLocalName: null,
+                                                                cancellationToken: default)
+                                                              .ConfigureAwait(false);
 
             string responseRawContent = await response.ReadAsStringAsync()
                                                         .ConfigureAwait(false);
