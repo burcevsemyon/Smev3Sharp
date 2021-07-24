@@ -83,7 +83,7 @@ namespace Smev3Client
 
                 var soapEnvelopeBody = await httpResponse
                                                 .Content
-                                                .ReadContentSoapBodyAsAsync<SendRequestResponse>(cancellationToken)
+                                                .ReadSoapBodyAsAsync<SendRequestResponse>(cancellationToken)
                                                 .ConfigureAwait(false);
 
                 return new Smev3ClientResponse<SendRequestResponse>(httpResponse, soapEnvelopeBody);
@@ -139,7 +139,7 @@ namespace Smev3Client
             using var response = await GetResponseAsync(namespaceUri, rootElementLocalName, cancellationToken)
                                         .ConfigureAwait(false);
 
-            var data = await response.ReadContentSoapBodyAsAsync<GetResponseResponse<TServiceResponse>>()
+            var data = await response.ReadSoapBodyAsAsync<GetResponseResponse<TServiceResponse>>()
                                         .ConfigureAwait(false);
 
             return new Smev3ClientResponse<GetResponseResponse<TServiceResponse>>(response.DetachHttpResponse(), data);
@@ -166,7 +166,7 @@ namespace Smev3Client
                 cancellationToken)
                 .ConfigureAwait(false);
 
-            var data = await httpResponse.Content.ReadContentSoapBodyAsAsync<AckResponse>(cancellationToken)
+            var data = await httpResponse.Content.ReadSoapBodyAsAsync<AckResponse>(cancellationToken)
                                         .ConfigureAwait(false);
 
             return new Smev3ClientResponse<AckResponse>(httpResponse, data);
@@ -228,7 +228,7 @@ namespace Smev3Client
                     return httpResponse;
                 }
 
-                var faultInfo = await httpResponse.Content.ReadContentSoapBodyAsAsync<SoapFault>(cancellationToken)
+                var faultInfo = await httpResponse.Content.ReadSoapBodyAsAsync<SoapFault>(cancellationToken)
                                                   .ConfigureAwait(false);
 
                 throw new Smev3Exception(

@@ -40,12 +40,12 @@ namespace Smev3Client
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public Task<T> ReadContentSoapBodyAsAsync<T>(CancellationToken cancellationToken = default)
+        public Task<T> ReadSoapBodyAsAsync<T>(CancellationToken cancellationToken = default)
             where T : ISoapEnvelopeBody, new()
         {
             ThrowIfDisposed();
 
-            return _httpResponse.Content.ReadContentSoapBodyAsAsync<T>(cancellationToken);
+            return _httpResponse.Content.ReadSoapBodyAsAsync<T>(cancellationToken);
         }
 
         /// <summary>

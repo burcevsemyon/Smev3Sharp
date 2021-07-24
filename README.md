@@ -114,7 +114,7 @@ namespace Smev3ClientExample
             using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
             // отправка запроса
-            using Smev3ClientResponse response = await client.SendRequestAsync(
+            using Smev3ClientResponse<SendRequestResponse> response = await client.SendRequestAsync(
                                                                 sendingContext, 
                                                                 cancellationToken: default)
                                                               .ConfigureAwait(false);
@@ -160,16 +160,16 @@ namespace Smev3ClientExample
             // чтение метаданных и содержательной части ответа в Xml.
             // классы GetResponseResponse<T>, Response<T>, MessagePrimaryContentXml  описаны в пространстве имён Smev3Client.Smev
             // класс MessagePrimaryContentXml предназначен для чтения содержательной части ответа сервиса в XmlDocument
-            GetResponseResponse<MessagePrimaryContentXml> smevMetaData = await response.ReadContentSoapBodyAsAsync<GetResponseResponse<MessagePrimaryContentXml>>
+            GetResponseResponse<MessagePrimaryContentXml> smevMetaData = await response.ReadSoapBodyAsAsync<GetResponseResponse<MessagePrimaryContentXml>>
                                                                                         (cancellationToken: default)
                                                                                         .ConfigureAwait(false);
 
-            Response<MessagePrimaryContentXml> responseContent = smevMetaData.ResponseMessage.Response;
+            Response<MessagePrimaryContentXml> responseMetadata = smevMetaData.ResponseMessage.Response;
 
-            Console.WriteLine("Ответ ид. {0} на сообщение ид. {1}. Содержимое ответа: {3}",
-                responseContent.MessageMetadata.MessageId,
-                responseContent.OriginalMessageId,
-                responseContent.SenderProvidedResponseData.MessagePrimaryContent.Content.Content.OuterXml);
+            Console.WriteLine("Ответ ид. {0} на сообщение ид. {1}. Содержимое ответа сервиса: {3}",
+                responseMetadata.MessageMetadata.MessageId,
+                responseMetadata.OriginalMessageId,
+                responseMetadata.SenderProvidedResponseData.MessagePrimaryContent.Content.Content.OuterXml);
         }
     }
 }

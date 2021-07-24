@@ -10,7 +10,7 @@ namespace Smev3Client.Http
 {
     internal static class HttpContentExtensions
     {
-        internal static async Task<T> ReadContentSoapBodyAsAsync<T>(
+        internal static async Task<T> ReadSoapBodyAsAsync<T>(
             this HttpContent httpContent, CancellationToken cancellationToken)
             where T : ISoapEnvelopeBody, new()
         {
