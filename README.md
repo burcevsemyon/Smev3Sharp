@@ -2,12 +2,12 @@
 
 Частичная реализация HTTP клиента для СМЭВ 3 (версии схем 1.2) с поддержкой подписи XML средствами СКЗИ КРИПТО-ПРО для Linux
 
-**Реализованные методы:**
+##### Реализованные методы:
 1. SendRequest (Отправка запроса)
 2. GetResponse (Получение ответа из очереди входящих ответов)
 3. Ack (Подтверждение сообщения)
 
-**Зависимости:**
+##### Зависимости:
 
 .NET Standard 2.1  
 System.Security.Cryptography.Xml 5.0.0  
@@ -19,6 +19,9 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
 
 * [Конфигурирование](#Конфигурирование-через-appsettingsjson)
 * [Подключение](#Подключение)
+* [Отправка запроса](#Отправка-запроса)
+* [Получение ответа](#Получение-нетипизированного-ответа)
+    * [Получение нетипизированного ответа](#Получение-нетипизированного-ответа)
 
 ##### Конфигурирование через appsettings.json:
 
@@ -73,7 +76,7 @@ namespace Smev3ClientExample
 
             var factory = services.GetRequiredService<ISmev3ClientFactory>();
 
-            using var client = factory.Get("SMEV_SVC_MNEMONIC");
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
             ...
         }
@@ -81,12 +84,12 @@ namespace Smev3ClientExample
 }
 ```
 
-**Отправка запроса:**
+##### Отправка запроса:
 
 ```csharp
 namespace Smev3ClientExample
 {
-    // параметры запроса сервиса
+    // дескриптор запроса сервиса
     public class SomeSmevServiceRequest
     {
         ...
@@ -94,7 +97,7 @@ namespace Smev3ClientExample
 
     class Program
     {
-        static void Main(string[] args)
+        static async void Main(string[] args)
         {
             ...            
             
@@ -108,13 +111,42 @@ namespace Smev3ClientExample
                 }
             };
 
-            using var client = factory.Get("SMEV_SVC_MNEMONIC");
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
             // отправка запроса
-            using var response = await client.SendRequestAsync(sendingContext, cancellationToken: default)
+            using Smev3ClientResponse response = await client.SendRequestAsync(sendingContext, cancellationToken: default)
                                              .ConfigureAwait(false);
 
             Console.WriteLine("Ид. сообщения СМЭВ: {0}", response.Data.MessageMetadata.MessageId);
+        }
+    }
+}
+```
+
+##### Получение нетипизированного ответа:
+
+Подобным образом целесообразно работать с ответами СМЭВ в случае если заранее не известно по каким типам сведений вернётся ответ сервиса из очереди
+
+```csharp
+namespace Smev3ClientExample
+{
+    class Program
+    {
+        static async void Main(string[] args)
+        {
+            ...            
+            
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            // получение ответа из очереди
+            using Smev3ClientResponse response = await client.GetResponseAsync(
+                                                    namespaceUri: null, rootElementLocalName: null, cancellationToken: default)
+                                              .ConfigureAwait(false);
+
+            string responseRawContent = await response.ReadAsStringAsync()
+                                                        .ConfigureAwait(false);
+
+            Console.WriteLine("Полное содержимое входящего ответа СМЭВ: {0}", responseRawContent);
         }
     }
 }
