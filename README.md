@@ -23,7 +23,7 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
 * [Получение ответа](#Получение-нетипизированного-ответа)
     * [Получение нетипизированного ответа](#Получение-нетипизированного-ответа)
 
-##### Конфигурирование через appsettings.json:
+#### Конфигурирование через appsettings.json:
 
 ```json
 {
@@ -160,8 +160,9 @@ namespace Smev3ClientExample
             // чтение метаданных и содержательной части ответа в Xml.
             // классы GetResponseResponse<T>, Response<T>, MessagePrimaryContentXml  описаны в пространстве имён Smev3Client.Smev
             // класс MessagePrimaryContentXml предназначен для чтения содержательной части ответа сервиса в XmlDocument
-            GetResponseResponse<MessagePrimaryContentXml> smevMetaData = await response.ReadSoapBodyAsAsync<GetResponseResponse<MessagePrimaryContentXml>>
-                                                                                        (cancellationToken: default)
+            GetResponseResponse<MessagePrimaryContentXml> smevMetaData = await response.ReadSoapBodyAsAsync
+                                                                                            <GetResponseResponse<MessagePrimaryContentXml>>
+                                                                                            (cancellationToken: default)
                                                                                         .ConfigureAwait(false);
 
             Response<MessagePrimaryContentXml> responseMetadata = smevMetaData.ResponseMessage.Response;
