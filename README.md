@@ -22,6 +22,7 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
 * [Отправка запроса](#Отправка-запроса)
 * [Получение ответа](#Получение-нетипизированного-ответа)
     * [Получение нетипизированного ответа](#Получение-нетипизированного-ответа)
+    * [Получение типизированного ответа](#Получение-типизированного-ответа)
 
 #### Конфигурирование через appsettings.json:
 
@@ -92,6 +93,7 @@ namespace Smev3ClientExample
     // дескриптор запроса сервиса
     public class SomeSmevServiceRequest
     {
+        // поля
         ...
     }
 
@@ -171,6 +173,52 @@ namespace Smev3ClientExample
                 responseMetadata.MessageMetadata.MessageId,
                 responseMetadata.OriginalMessageId,
                 responseMetadata.SenderProvidedResponseData.MessagePrimaryContent.Content.Content.OuterXml);
+        }
+    }
+}
+```
+
+#### Получение типизированного ответ
+
+В случае если используется выборка ответов с фильтрацией по типам сведений, то её можно совместить десериализацией содержательной части ответа сервиса
+
+```csharp
+...
+using Smev3Client.Smev;
+...
+
+namespace Smev3ClientExample
+{
+    // дескриптор ответа сервиса
+    public class SomeSmevServiceRespose
+    {
+        // поля
+        ...
+    }
+
+    class Program
+    {
+        static async void Main(string[] args)
+        {
+            ...            
+            
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            // получение ответа из очереди
+            using Smev3ClientResponse<GetResponseResponse<SomeSmevServiceRespose>> response = await client.GetResponseAsync<SomeSmevServiceRespose>(
+                                                    namespaceUri: new Uri("urn://some-smev-service-namespace"),
+                                                    rootElementLocalName: "SomeSmevServiceRespose",
+                                                    cancellationToken: default)
+                                              .ConfigureAwait(false);
+
+            Response<SomeSmevServiceRespose> responseMetadata = response.Data.ResponseMessage.Response;
+
+            Console.WriteLine("Ответ ид. {0} на сообщение ид. {1}.",
+                responseMetadata.MessageMetadata.MessageId,
+                responseMetadata.OriginalMessageId);
+
+            // содержательная часть ответа сервиса
+            SomeSmevServiceRespose serviceResponse = responseMetadata.SenderProvidedResponseData.MessagePrimaryContent.Content;
         }
     }
 }
