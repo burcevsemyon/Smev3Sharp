@@ -17,7 +17,7 @@ Microsoft.Extensions.DependencyInjection.Abstractions 5.0.0
 Microsoft.Extensions.Configuration.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Binder 5.0.0  
 
-* [Конфигурирование](#Конфигурирование-через-appsettings.json)
+* [Конфигурирование](#Конфигурирование-через-appsettingsjson)
 * [Подключение](#Подключение)
 
 ##### Конфигурирование через appsettings.json:
