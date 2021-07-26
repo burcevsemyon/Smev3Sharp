@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Burcev Semyon</Authors>
-    <Version>1.0.0-alpha</Version>
+    <Version>1.0.1-alpha</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/burcevsemyon/Smev3Sharp</PackageProjectUrl>
     <Description>Http клиент для СМЭВ 3. Поддержка подписи XML средствами КРИПТО-ПРО для Linux</Description>
@@ -13,6 +13,8 @@
     <RepositoryUrl>https://github.com/burcevsemyon/Smev3Sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,7 +25,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-    <OutputPath></OutputPath>    
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,7 +39,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CAPILite\CAPILite.csproj">
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>all</IncludeAssets>
+      <IncludeAssets>CAPILite.dll</IncludeAssets>
     </ProjectReference>
   </ItemGroup>
 
