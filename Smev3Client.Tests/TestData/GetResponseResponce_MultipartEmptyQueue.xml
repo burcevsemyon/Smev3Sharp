@@ -4,4 +4,5 @@ Content-Transfer-Encoding: binary
 Content-ID: <root.message@cxf.apache.org>
 
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ns2:GetResponseResponse xmlns="urn://x-artefacts-smev-gov-ru/services/message-exchange/types/basic/1.2" xmlns:ns2="urn://x-artefacts-smev-gov-ru/services/message-exchange/types/1.2" xmlns:ns3="urn://x-artefacts-smev-gov-ru/services/message-exchange/types/faults/1.2"/></soap:Body></soap:Envelope>
+
 --f438a15e-9b5b-491f-9b47-aba4d00b8837--
