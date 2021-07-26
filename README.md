@@ -225,3 +225,72 @@ namespace Smev3ClientExample
     }
 }
 ```
+
+#### Подтверждение сообщения:
+
+```csharp
+...
+using Smev3Client.Smev;
+...
+
+namespace Smev3ClientExample
+{
+    class Program
+    {
+        static async void Main(string[] args)
+        {
+            ...            
+            
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            // получение ответа из очереди
+            using Smev3ClientResponse<GetResponseResponse<MessagePrimaryContentXml>> response = await client.GetResponseAsync<MessagePrimaryContentXml>(
+                                                    namespaceUri: null,
+                                                    rootElementLocalName: null,
+                                                    cancellationToken: default)
+                                              .ConfigureAwait(false);
+
+            // подтверждение сообщения
+            using var ackResponse = await client.AckAsync(
+                                            response.Data.ResponseMessage.Response.MessageMetadata.MessageId.Value,
+                                            cancellationToken: default)
+                                            .ConfigureAwait(false);
+        }
+    }
+}
+```
+
+#### Обработка ошибок:
+
+В случае если СМЭВ возвращает ошибку через SOAP FAULT методы клиента бросают исключение типа Smev3Exception
+
+```csharp
+...
+using Smev3Client.Smev;
+...
+
+namespace Smev3ClientExample
+{
+    class Program
+    {
+        static async void Main(string[] args)
+        {
+            ...            
+            
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            try
+            {
+                // подтверждение сообщения
+                using var ackResponse = await client.AckAsync(...)
+                                                .ConfigureAwait(false);
+            }
+            catch (Smev3Exception ex)
+            {
+                // обработка ошибки СМЭВ
+                ...
+            }
+        }
+    }
+}
+```
