@@ -18,8 +18,8 @@ namespace Smev3Client.Tests
         public async Task ReadShortErrorInfo()
         {
             var httpResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError)
-            { 
-                Content = new StringContent(File.ReadAllText("TestData/SoapFaultResponse.xml")) 
+            {
+                Content = new StringContent(File.ReadAllText("TestData/SoapFaultResponse.xml"))
             };
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
@@ -142,7 +142,7 @@ namespace Smev3Client.Tests
             var content = new StringContent(File.ReadAllText("TestData/GetResponseResponce_MultipartEmptyQueue.xml"));
 
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/related");
-            
+
             content.Headers.ContentType.Parameters.Add(
                 new System.Net.Http.Headers.NameValueHeaderValue("boundary", "f438a15e-9b5b-491f-9b47-aba4d00b8837"));
 
