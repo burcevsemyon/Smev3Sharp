@@ -30,7 +30,7 @@ namespace Smev3Client.Http
             var stream = await localHttpContent.ReadAsStreamAsync()
                                             .ConfigureAwait(false);
 
-            if (stream.CanSeek)
+            if (stream.CanSeek && stream.Position != 0)
             {
                 stream.Seek(0, System.IO.SeekOrigin.Begin);
             }
