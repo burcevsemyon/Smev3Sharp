@@ -1,7 +1,7 @@
-using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -139,7 +139,7 @@ namespace Smev3Client.Tests
         [TestMethod]
         public async Task ReadGetResponseResponse_MultipartEmptyQueue()
         {
-            var content = new StringContent(File.ReadAllText("TestData/GetResponseResponce_MultipartEmptyQueue.xml"));
+            var content = new StringContent(File.ReadAllText("TestData/GetResponseResponce_MultipartEmptyQueue.xml", Encoding.UTF8));
 
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/related");
 
