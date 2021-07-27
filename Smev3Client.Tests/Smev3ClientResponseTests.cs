@@ -141,7 +141,7 @@ namespace Smev3Client.Tests
         {
             var content = new StringContent(File.ReadAllText("TestData/GetResponseResponce_MultipartEmptyQueue.xml", Encoding.UTF8));
 
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/related");
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/mixed");
 
             content.Headers.ContentType.Parameters.Add(
                 new System.Net.Http.Headers.NameValueHeaderValue("boundary", "f438a15e-9b5b-491f-9b47-aba4d00b8837"));
