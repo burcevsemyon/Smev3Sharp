@@ -64,7 +64,7 @@ namespace Smev3Client.Http
             {
                 if (parameter.Name.Equals("boundary"))
                 {
-                    boundary = parameter.Value;
+                    boundary = parameter.Value.Trim('"');
 
                     return true;
                 }
