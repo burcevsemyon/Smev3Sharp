@@ -36,7 +36,7 @@ namespace CAPILite
             [In] int dwLanguageId, 
             [Out] StringBuilder lpBuffer,
             [In] int nSize,
-            [In] IntPtr va_list_arguments);
+            [In] IntPtr vaListArguments);
 
         [DllImport("capi20.so", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern 
@@ -70,7 +70,7 @@ namespace CAPILite
 
         [DllImport("capi20.so", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public extern static
+        public static extern
         bool CryptAcquireCertificatePrivateKey(
             [In] CertContextSafeHandle pCert,
             [In] uint dwFlags,
@@ -84,7 +84,7 @@ namespace CAPILite
         public static extern
         bool CryptCreateHash(
             [In] CspSafeHandle hProv,
-            [In] uint Algid,
+            [In] uint algid,
             [In] IntPtr hKey,
             [In] int dwFlags,
             [Out] out HashSafeHandle phHash);
