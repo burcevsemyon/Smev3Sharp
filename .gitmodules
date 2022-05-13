@@ -1,0 +1,3 @@
+[submodule "CryptoApiLiteSharp"]
+	path = CryptoApiLiteSharp
+	url = https://github.com/burcevsemyon/CryptoApiLiteSharp.git
