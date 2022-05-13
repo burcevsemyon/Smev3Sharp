@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-using CAPILite;
+using CryptoApiLiteSharp;
 
 namespace Smev3Client.Crypt
 {

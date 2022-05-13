@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/burcevsemyon/Smev3Sharp</PackageProjectUrl>
     <Description>Http клиент для СМЭВ 3. Поддержка подписи XML средствами КРИПТО-ПРО для Linux</Description>
     <PackageTags>smev</PackageTags>
-    <Copyright>2021 Burcev Semyon</Copyright>
+    <Copyright>2022 Burcev Semyon</Copyright>
     <AssemblyName>Smev3Sharp</AssemblyName>
     <RepositoryUrl>https://github.com/burcevsemyon/Smev3Sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -37,17 +37,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CAPILite\CAPILite.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>CAPILite.dll</IncludeAssets>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CryptoApiLiteSharp\CryptoApiLiteSharp\CryptoApiLiteSharp.csproj" />
   </ItemGroup>
 
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">

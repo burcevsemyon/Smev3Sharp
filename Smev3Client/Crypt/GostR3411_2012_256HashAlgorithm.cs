@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-using CAPILite;
+using CryptoApiLiteSharp;
 
 namespace Smev3Client.Crypt
 {
