@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -83,11 +84,20 @@ namespace Smev3Client.Smev
                         (r) =>
                         {
                             var status = new AsyncProcessingStatus();
-
                             status.ReadXml(r);
-
                             ProcessingStatus = status;
                         });
+                    respReader.ReadElementIfItCurrentOrRequired("RequestRejected", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false, r =>
+                    {
+                        var requestRejectedList = new List<RequestRejected>();
+                        while (reader.IsStartElement("RequestRejected", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2))
+                        {
+                            var requestRejected = new RequestRejected();
+                            requestRejected.ReadXml(r);
+                            requestRejectedList.Add(requestRejected);
+                        }
+                        RequestRejectionResons = requestRejectedList.ToArray();
+                    });
                 });
         }
 

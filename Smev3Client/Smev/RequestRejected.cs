@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Smev3Client.Xml;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -28,7 +29,14 @@ namespace Smev3Client.Smev
 
         public void ReadXml(XmlReader reader)
         {
-            throw new NotImplementedException();
+            reader.ReadElementSubtreeContent(nameof(RequestRejected), Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false, 
+                rejectionReader =>
+                {
+                    rejectionReader.ReadElementIfItCurrentOrRequired("RejectionReasonCode", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true, 
+                        r => RejectionReasonCode = r.ReadElementContentAsString());
+                    rejectionReader.ReadElementIfItCurrentOrRequired("RejectionReasonDescription", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true, 
+                        r => RejectionReasonDescription = r.ReadElementContentAsString());
+                });
         }
 
         public void WriteXml(XmlWriter writer)
