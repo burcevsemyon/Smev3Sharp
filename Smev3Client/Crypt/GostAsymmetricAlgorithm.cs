@@ -37,7 +37,7 @@ namespace Smev3Client.Crypt
         public byte[] CertRawData => _certRawData.Value;
 
         public unsafe GostAsymmetricAlgorithm(string pfxPath, string pfxPassword, string thumbPrint)
-         :this()
+         : this()
         {
             if (string.IsNullOrWhiteSpace(thumbPrint))
             {
@@ -109,7 +109,7 @@ namespace Smev3Client.Crypt
         /// <returns></returns>
         public unsafe byte[] CreateHashSignature(byte[] hashData)
         {
-            if(hashData == null || hashData.Length == 0)
+            if (hashData == null || hashData.Length == 0)
             {
                 throw new ArgumentException($"Параметр {nameof(hashData)} должен быть не пустым массивом.");
             }
@@ -136,7 +136,7 @@ namespace Smev3Client.Crypt
 
                     fixed (byte* ptrSignData = signData)
                     {
-                        if (!CApiLiteNative.CryptSignHash(hashHandle, _keySpec, IntPtr.Zero, 0, new IntPtr(ptrSignData), ref signDataLen))
+                        if (!CApiLiteNative.CryptSignHashA(hashHandle, _keySpec, IntPtr.Zero, 0, new IntPtr(ptrSignData), ref signDataLen))
                         {
                             throw new CApiLiteLastErrorException();
                         }
@@ -170,7 +170,7 @@ namespace Smev3Client.Crypt
 
         private unsafe byte[] GetCertRawData()
         {
-            if(_certHandle == null || _certHandle.IsInvalid)
+            if (_certHandle == null || _certHandle.IsInvalid)
             {
                 throw new Exception("Объект не инициалирован.");
             }
@@ -180,7 +180,7 @@ namespace Smev3Client.Crypt
 
             var certEncoded = new byte[certContext.cbCertEncoded];
 
-            fixed(void* ptr = certEncoded)
+            fixed (void* ptr = certEncoded)
             {
                 Buffer.MemoryCopy(certContext.pbCertEncoded.ToPointer(), ptr,
                     certEncoded.Length, certContext.cbCertEncoded);
