@@ -8,7 +8,6 @@ namespace Smev3Client.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        [Obsolete("Use AddSmev3Client instead")]
         public static void UseSmev3Client(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSmev3Client();

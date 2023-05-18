@@ -14,7 +14,7 @@ namespace Smev3Client.Crypt
         {
             HashSizeValue = 256;
             
-            if (!CApiLiteNative.CryptAcquireContextA(
+            if (!CApiLiteNative.CryptAcquireContext(
                out _cspHandle, null, CApiLiteConsts.CP_GR3410_2012_PROV,
                CApiLiteConsts.PROV_GOST_2012_256, CApiLiteConsts.CRYPT_VERIFYCONTEXT))
             {

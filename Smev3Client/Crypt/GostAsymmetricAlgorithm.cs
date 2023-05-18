@@ -136,7 +136,7 @@ namespace Smev3Client.Crypt
 
                     fixed (byte* ptrSignData = signData)
                     {
-                        if (!CApiLiteNative.CryptSignHashA(hashHandle, _keySpec, IntPtr.Zero, 0, new IntPtr(ptrSignData), ref signDataLen))
+                        if (!CApiLiteNative.CryptSignHash(hashHandle, _keySpec, IntPtr.Zero, 0, new IntPtr(ptrSignData), ref signDataLen))
                         {
                             throw new CApiLiteLastErrorException();
                         }
