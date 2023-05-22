@@ -4,15 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client", "Smev3Client\Smev3Client.csproj", "{92A8A458-C93F-4DA5-BB36-9838805EA664}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D82B8571-EDA7-49AC-8790-C5D5BC7006CA} = {D82B8571-EDA7-49AC-8790-C5D5BC7006CA}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0783FFB9-5B98-4884-829B-BD26389BFD74}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smev3Client.Tests", "Smev3Client.Tests\Smev3Client.Tests.csproj", "{117F540D-8837-4DBB-B263-E061EBAD2145}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoApiLiteSharp", "CryptoApiLiteSharp\CryptoApiLiteSharp\CryptoApiLiteSharp.csproj", "{D82B8571-EDA7-49AC-8790-C5D5BC7006CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +23,6 @@ Global
 		{117F540D-8837-4DBB-B263-E061EBAD2145}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{117F540D-8837-4DBB-B263-E061EBAD2145}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{117F540D-8837-4DBB-B263-E061EBAD2145}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D82B8571-EDA7-49AC-8790-C5D5BC7006CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D82B8571-EDA7-49AC-8790-C5D5BC7006CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D82B8571-EDA7-49AC-8790-C5D5BC7006CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D82B8571-EDA7-49AC-8790-C5D5BC7006CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
