@@ -52,11 +52,11 @@ namespace Smev3Client
         /// Чтение ответа в строку
         /// </summary>
         /// <returns></returns>
-        public Task<string> ReadAsStringAsync()
+        public Task<string> ReadSoapBodyAsStringAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
-            return _httpResponse.Content.ReadAsStringAsync();
+            return _httpResponse.Content.ReadSoapBodyAsStringAsync(cancellationToken);
         }
 
         #region IDisposable
