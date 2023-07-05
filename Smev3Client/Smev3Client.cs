@@ -54,7 +54,7 @@ namespace Smev3Client
         /// Отправка запроса
         /// </summary>
         /// <typeparam name="TServiceRequest"></typeparam>
-        /// <param name="context">Параметры методы</param>
+        /// <param name="context">Параметры метода</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
         public async Task<Smev3ClientResponse<SendRequestResponse>> SendRequestAsync<TServiceRequest>(SendRequestExecutionContext<TServiceRequest> context,
@@ -66,8 +66,7 @@ namespace Smev3Client
             HttpResponseMessage httpResponse = null;
             try
             {
-                httpResponse = await SendAsync(
-                    new SendRequestRequest<TServiceRequest>
+                var envelope = new SendRequestRequest<TServiceRequest>
                     (
                         requestData: new SenderProvidedRequestData<TServiceRequest>(
                             messageId: Rfc4122.GenerateUUIDv1(),
@@ -76,10 +75,14 @@ namespace Smev3Client
                             )
                         { TestMessage = context.IsTest },
                         signer: new Smev3XmlSigner(_algorithm)
-                    ),
-                    cancellationToken
-                )
-                .ConfigureAwait(false);
+                    );
+
+                var envelopeBytes = envelope.Get();
+
+                context.OnBeforeSend?.Invoke(envelopeBytes);
+
+                httpResponse = await SendAsync(envelopeBytes, cancellationToken)
+                                                        .ConfigureAwait(false);
 
                 var soapEnvelopeBody = await httpResponse
                                                 .Content
@@ -109,17 +112,18 @@ namespace Smev3Client
         {
             ThrowIfDisposed();
 
-            var httpResponse = await SendAsync(
-                new GetResponseRequest(
+            var envelope = new GetResponseRequest(
                     requestData: new MessageTypeSelector(namespaceUri, rootElementLocalName)
                     {
                         Timestamp = DateTime.Now,
                         Id = "SIGNED_BY_CONSUMER"
                     },
-                    signer: new Smev3XmlSigner(_algorithm)),
-                        cancellationToken
-                 )
-                 .ConfigureAwait(false);
+                    signer: new Smev3XmlSigner(_algorithm));
+
+            var envelopeBytes = envelope.Get();
+
+            var httpResponse = await SendAsync(envelopeBytes, cancellationToken)
+                                        .ConfigureAwait(false);
 
             return new Smev3ClientResponse(httpResponse);
         }
@@ -155,16 +159,18 @@ namespace Smev3Client
         {
             ThrowIfDisposed();
 
-            var httpResponse = await SendAsync(
-                new AckRequest(
+            var envelope = new AckRequest(
                     new AckTargetMessage
                     {
                         MessageID = messageId,
                         Id = "SIGNED_BY_CALLER"
                     },
-                    signer: new Smev3XmlSigner(_algorithm)),
-                cancellationToken)
-                .ConfigureAwait(false);
+                    signer: new Smev3XmlSigner(_algorithm));
+
+            var envelopeBytes = envelope.Get();
+
+            var httpResponse = await SendAsync(envelopeBytes, cancellationToken)
+                                        .ConfigureAwait(false);
 
             var data = await httpResponse.Content.ReadSoapBodyAsAsync<AckResponse>(cancellationToken)
                                         .ConfigureAwait(false);
@@ -196,16 +202,14 @@ namespace Smev3Client
         /// <summary>
         /// Отправка конверта
         /// </summary>
-        /// <param name="envelope"></param>
+        /// <param name="envelopeBytes"></param>
         /// <param name="cancellationToken"></param>
-        private async Task<HttpResponseMessage> SendAsync(ISmev3Envelope envelope, CancellationToken cancellationToken)
+        private async Task<HttpResponseMessage> SendAsync(byte[] envelopeBytes, CancellationToken cancellationToken)
         {
-            if (envelope == null)
+            if (envelopeBytes == null)
             {
-                throw new ArgumentNullException(nameof(envelope));
+                throw new ArgumentNullException(nameof(envelopeBytes));
             }
-
-            var envelopeBytes = envelope.Get();
 
             var content = new ByteArrayContent(
                 envelopeBytes, 0, envelopeBytes.Length);
