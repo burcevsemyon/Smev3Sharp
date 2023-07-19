@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Security.Cryptography;
 
 namespace Smev3Client.Utils
 {
     public static class Rfc4122
     {
-        private static readonly object _syncObject = new object();
+        private static readonly DateTimeOffset _startDate = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);        
 
-        private static readonly DateTimeOffset GregorianCalendarStart = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);
-
-        private static readonly Random _random = new Random((int)DateTime.Now.Ticks);
-
-        public static Guid GenerateUUIDv1()
+        private static byte[] GetCalendarStartElapsedTicksBytes()
         {
-            var uuidBytes = new byte[16];
-            
-            lock (_syncObject)
-            {
-                Array.Copy(
-                    BitConverter.GetBytes(
-                        (DateTimeOffset.UtcNow - GregorianCalendarStart).Ticks), uuidBytes, 8);
+            return BitConverter.GetBytes((DateTimeOffset.UtcNow - _startDate).Ticks);
+        }
 
-                _random.NextBytes(new Span<byte>(uuidBytes, 8, 8));                
+        public static unsafe Guid GenerateUUIDv1()
+        {
+            Span<byte> uuidBytes = stackalloc byte[16];
+
+            var ticksBytes = GetCalendarStartElapsedTicksBytes();
+            for ( var i = 0; i < ticksBytes.Length; i++)
+            {
+                uuidBytes[i] = ticksBytes[i];
             }
+            
+            RandomNumberGenerator.Fill(uuidBytes[8..]);
 
             // version V1
             uuidBytes[7] &= 0x0f;
