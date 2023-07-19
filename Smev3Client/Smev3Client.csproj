@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Burcev Semyon</Authors>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/burcevsemyon/Smev3Sharp</PackageProjectUrl>
     <Description>Http клиент для СМЭВ 3. Поддержка подписи XML средствами КРИПТО-ПРО для Linux</Description>
