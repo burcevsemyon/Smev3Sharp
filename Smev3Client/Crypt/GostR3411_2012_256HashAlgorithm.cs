@@ -7,21 +7,25 @@ namespace Smev3Client.Crypt
 {
     public class GostR3411_2012_256HashAlgorithm : HashAlgorithm
     {
-        private CspSafeHandle _cspHandle;
+        private static readonly CspSafeHandle _cspHandle;
+        
         private HashSafeHandle _hashHandle;
 
-        public GostR3411_2012_256HashAlgorithm()
+        private bool _disposed;
+
+        static GostR3411_2012_256HashAlgorithm()
         {
-            HashSizeValue = 256;
-            
             if (!CApiLiteNative.CryptAcquireContext(
                out _cspHandle, null, CApiLiteConsts.CP_GR3410_2012_PROV,
                CApiLiteConsts.PROV_GOST_2012_256, CApiLiteConsts.CRYPT_VERIFYCONTEXT))
             {
                 throw new CApiLiteLastErrorException();
             }
+        }
 
-            Initialize();
+        public GostR3411_2012_256HashAlgorithm()
+        {
+            HashSizeValue = 256;            
         }
 
         ~GostR3411_2012_256HashAlgorithm()
@@ -35,20 +39,26 @@ namespace Smev3Client.Crypt
 
         public override void Initialize()
         {
-            _hashHandle?.Close();
-            _hashHandle = null;            
+            ThrowIfDisposed();
 
-            if (!CApiLiteNative.CryptCreateHash(
-                _cspHandle, CApiLiteConsts.CALG_GR3411_2012_256, IntPtr.Zero,
-                0, out _hashHandle))
-            {
-                throw new CApiLiteLastErrorException();
-            }
+            ResetHash();
         }
 
         protected unsafe override void HashCore(byte[] array, int ibStart, int cbSize)
         {
-            if(array.Length == 0 || cbSize == 0)
+            ThrowIfDisposed();
+
+            if (_hashHandle == null || _hashHandle.IsClosed || _hashHandle.IsInvalid)
+            {
+                if (!CApiLiteNative.CryptCreateHash(
+                    _cspHandle, CApiLiteConsts.CALG_GR3411_2012_256, IntPtr.Zero,
+                    0, out _hashHandle))
+                {
+                    throw new CApiLiteLastErrorException();
+                }
+            }
+
+            if (array.Length == 0 || cbSize == 0)
             {
                 return;
             }
@@ -59,11 +69,13 @@ namespace Smev3Client.Crypt
                 {
                     throw new CApiLiteLastErrorException();
                 }
-            }            
+            }
         }
 
         protected unsafe override byte[] HashFinal()
         {
+            ThrowIfDisposed();
+
             int dataLength = 32;
             var data = new byte[dataLength];
 
@@ -86,13 +98,31 @@ namespace Smev3Client.Crypt
 
         protected override void Dispose(bool disposing)
         {
-            _hashHandle?.Close();
-            _hashHandle = null;
-
-            _cspHandle?.Close();
-            _cspHandle = null;
+            ResetHash();
 
             base.Dispose(disposing);
+
+            _disposed = true;
+        }
+
+        private void ResetHash()
+        {
+            if (_hashHandle != null)
+            {
+                _ = CApiLiteNative.CryptDestroyHash(_hashHandle.DangerousGetHandle());
+
+                _hashHandle.Close();
+            }
+
+            _hashHandle = null;
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(GostR3411_2012_256HashAlgorithm));
+            }
         }
     }
 }

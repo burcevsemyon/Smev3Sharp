@@ -32,6 +32,11 @@ namespace Smev3Client.Crypt
             _certRawData = new Lazy<byte[]>(() => GetCertRawData(), true);
         }
 
+        ~GostAsymmetricAlgorithm()
+        {
+            Dispose(false);
+        }
+
         public override string SignatureAlgorithm => XmlDsigConsts.XmlDsigGost3410_2012_256Url;
 
         public byte[] CertRawData => _certRawData.Value;
@@ -157,7 +162,13 @@ namespace Smev3Client.Crypt
         {
             _certHandle?.Close();
             _storeHandle?.Close();
-            _cspHandle?.Close();
+
+            if (_cspHandle != null)
+            {
+                _ = CApiLiteNative.CryptReleaseContext(_cspHandle.DangerousGetHandle(), 0);
+             
+                _cspHandle.Close();
+            }
 
             _certHandle = null;
             _storeHandle = null;

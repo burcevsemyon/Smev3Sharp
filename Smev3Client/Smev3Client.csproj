@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Burcev Semyon</Authors>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/burcevsemyon/Smev3Sharp</PackageProjectUrl>
     <Description>Http клиент для СМЭВ 3. Поддержка подписи XML средствами КРИПТО-ПРО для Linux</Description>
@@ -13,8 +13,8 @@
     <RepositoryUrl>https://github.com/burcevsemyon/Smev3Sharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.2.1</AssemblyVersion>
+    <FileVersion>1.2.1</FileVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
@@ -35,7 +35,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="5.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
