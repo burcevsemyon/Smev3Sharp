@@ -162,13 +162,7 @@ namespace Smev3Client.Crypt
         {
             _certHandle?.Close();
             _storeHandle?.Close();
-
-            if (_cspHandle != null)
-            {
-                _ = CApiLiteNative.CryptReleaseContext(_cspHandle.DangerousGetHandle(), 0);
-             
-                _cspHandle.Close();
-            }
+            _cspHandle?.Close();
 
             _certHandle = null;
             _storeHandle = null;

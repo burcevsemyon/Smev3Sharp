@@ -107,13 +107,7 @@ namespace Smev3Client.Crypt
 
         private void ResetHash()
         {
-            if (_hashHandle != null)
-            {
-                _ = CApiLiteNative.CryptDestroyHash(_hashHandle.DangerousGetHandle());
-
-                _hashHandle.Close();
-            }
-
+            _hashHandle?.Close();
             _hashHandle = null;
         }
 
