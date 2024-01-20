@@ -68,7 +68,7 @@ namespace Smev3Client.Crypt
                             CApiLiteConsts.CRYPT_MACHINE_KEYSET | CApiLiteConsts.PKCS12_IMPORT_SILENT);
                         if (_storeHandle.IsInvalid)
                         {
-                            throw new CApiLiteLastErrorException();
+                            throw new CApiLiteLastErrorException(nameof(CApiLiteNative.PFXImportCertStore));
                         }
                     }
                 }
@@ -88,7 +88,7 @@ namespace Smev3Client.Crypt
                         CApiLiteConsts.CERT_FIND_SHA1_HASH, new IntPtr(&thumbPrintDataBlob), IntPtr.Zero);
                     if (_certHandle.IsInvalid)
                     {
-                        throw new CApiLiteLastErrorException();
+                        throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CertFindCertificateInStore));
                     }
                 }
 
@@ -97,7 +97,7 @@ namespace Smev3Client.Crypt
                     _certHandle, CApiLiteConsts.CRYPT_ACQUIRE_USE_PROV_INFO_FLAG,
                     IntPtr.Zero, out _cspHandle, ref _keySpec, ref callerFreeProvider))
                 {
-                    throw new CApiLiteLastErrorException();
+                    throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptAcquireCertificatePrivateKey));
                 }
             }
             catch
@@ -126,14 +126,14 @@ namespace Smev3Client.Crypt
                     _cspHandle, CApiLiteConsts.CALG_GR3411_2012_256, IntPtr.Zero,
                     0, out hashHandle))
                 {
-                    throw new CApiLiteLastErrorException();
+                    throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptCreateHash));
                 }
 
                 fixed (void* ptrHashData = hashData)
                 {
                     if (!CApiLiteNative.CryptSetHashParam(hashHandle, CApiLiteConsts.HP_HASHVAL, new IntPtr(ptrHashData), 0))
                     {
-                        throw new CApiLiteLastErrorException();
+                        throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptSetHashParam));
                     }
 
                     var signData = new byte[SIGN_BUFF_SIZE];
@@ -143,7 +143,7 @@ namespace Smev3Client.Crypt
                     {
                         if (!CApiLiteNative.CryptSignHash(hashHandle, _keySpec, IntPtr.Zero, 0, new IntPtr(ptrSignData), ref signDataLen))
                         {
-                            throw new CApiLiteLastErrorException();
+                            throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptSignHash));
                         }
                     }
 

@@ -16,7 +16,7 @@ Microsoft.AspNetCore.WebUtilities 2.2.0
 Microsoft.Extensions.DependencyInjection.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Binder 5.0.0  
-CryptoApiLiteSharp 1.0.0  
+CryptoApiLiteSharp 1.1.0  
 
 * [Конфигурирование](#Конфигурирование-через-appsettingsjson)
 * [Подключение](#Подключение)

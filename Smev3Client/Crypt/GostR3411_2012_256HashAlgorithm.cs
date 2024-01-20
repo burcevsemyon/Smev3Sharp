@@ -19,7 +19,7 @@ namespace Smev3Client.Crypt
                out _cspHandle, null, CApiLiteConsts.CP_GR3410_2012_PROV,
                CApiLiteConsts.PROV_GOST_2012_256, CApiLiteConsts.CRYPT_VERIFYCONTEXT))
             {
-                throw new CApiLiteLastErrorException();
+                throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptAcquireContext));
             }
         }
 
@@ -54,7 +54,7 @@ namespace Smev3Client.Crypt
                     _cspHandle, CApiLiteConsts.CALG_GR3411_2012_256, IntPtr.Zero,
                     0, out _hashHandle))
                 {
-                    throw new CApiLiteLastErrorException();
+                    throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptCreateHash));
                 }
             }
 
@@ -67,7 +67,7 @@ namespace Smev3Client.Crypt
             {
                 if (!CApiLiteNative.CryptHashData(_hashHandle, new IntPtr(pbData), cbSize, 0))
                 {
-                    throw new CApiLiteLastErrorException();
+                    throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptHashData));
                 }
             }
         }
@@ -84,7 +84,7 @@ namespace Smev3Client.Crypt
                 if (!CApiLiteNative.CryptGetHashParam(
                     _hashHandle, CApiLiteConsts.HP_HASHVAL, new IntPtr(ptr), ref dataLength, 0))
                 {
-                    throw new CApiLiteLastErrorException();
+                    throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptGetHashParam));
                 }
             }
 
