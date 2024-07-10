@@ -7,8 +7,7 @@ using Smev3Client.Xml;
 
 namespace Smev3Client.Smev
 {
-
-    public class AckResponse: ISoapEnvelopeBody
+    public class AckResponse : ISoapEnvelopeBody
     {
         #region IXmlSerializable
 

@@ -8,7 +8,7 @@ namespace Smev3Client.Crypt
     public class GostR3411_2012_256HashAlgorithm : HashAlgorithm
     {
         private static readonly CspSafeHandle _cspHandle;
-        
+
         private HashSafeHandle _hashHandle;
 
         private bool _disposed;
@@ -25,7 +25,7 @@ namespace Smev3Client.Crypt
 
         public GostR3411_2012_256HashAlgorithm()
         {
-            HashSizeValue = 256;            
+            HashSizeValue = 256;
         }
 
         ~GostR3411_2012_256HashAlgorithm()
@@ -63,7 +63,7 @@ namespace Smev3Client.Crypt
                 return;
             }
 
-            fixed(byte* pbData = &array[ibStart])
+            fixed (byte* pbData = &array[ibStart])
             {
                 if (!CApiLiteNative.CryptHashData(_hashHandle, new IntPtr(pbData), cbSize, 0))
                 {
@@ -79,8 +79,8 @@ namespace Smev3Client.Crypt
             int dataLength = 32;
             var data = new byte[dataLength];
 
-            fixed(void* ptr = data)
-            {                
+            fixed (void* ptr = data)
+            {
                 if (!CApiLiteNative.CryptGetHashParam(
                     _hashHandle, CApiLiteConsts.HP_HASHVAL, new IntPtr(ptr), ref dataLength, 0))
                 {
@@ -88,7 +88,7 @@ namespace Smev3Client.Crypt
                 }
             }
 
-            if(dataLength != data.Length)
+            if (dataLength != data.Length)
             {
                 throw new Exception("Неверный размер хэша!");
             }

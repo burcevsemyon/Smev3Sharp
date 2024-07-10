@@ -9,7 +9,7 @@ namespace Smev3Client.Soap
      Namespace = SoapConsts.SOAP_NAMESPACE,
      ElementName = "Envelope",
      IsNullable = false)]
-    public class SoapEnvelope<TBody> 
+    public class SoapEnvelope<TBody>
         where TBody : ISoapEnvelopeBody, new()
     {
         public XmlSerializerNamespaces SerializerNamespaces { get; } = new XmlSerializerNamespaces();
@@ -36,7 +36,7 @@ namespace Smev3Client.Soap
             using var stream = new MemoryStream();
 
             using var writer = XmlWriter.Create(stream,
-                new XmlWriterSettings { Indent = false, Encoding = new UTF8Encoding(false) }); 
+                new XmlWriterSettings { Indent = false, Encoding = new UTF8Encoding(false) });
 
             var serializer = new XmlSerializer(GetType());
 

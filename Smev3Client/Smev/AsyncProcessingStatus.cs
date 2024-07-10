@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -51,7 +50,7 @@ namespace Smev3Client.Smev
 
                     statusReader.ReadElementIfItCurrentOrRequired(
                         "SmevFault", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,
-                        (r) => 
+                        (r) =>
                         {
                             var fault = new SmevFault();
 

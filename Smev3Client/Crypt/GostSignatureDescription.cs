@@ -2,13 +2,12 @@
 
 namespace Smev3Client.Crypt
 {
-    public class GostSignatureDescription: SignatureDescription
-    {        
-
+    public class GostSignatureDescription : SignatureDescription
+    {
         public override AsymmetricSignatureFormatter CreateFormatter(AsymmetricAlgorithm key)
         {
             var formatter = new GostAsymmetricSignatureFormatter();
-            
+
             formatter.SetKey(key);
 
             return formatter;

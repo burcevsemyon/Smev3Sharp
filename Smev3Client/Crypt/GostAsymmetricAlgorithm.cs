@@ -41,6 +41,8 @@ namespace Smev3Client.Crypt
 
         public byte[] CertRawData => _certRawData.Value;
 
+        private static readonly object _lock = new object();
+
         public unsafe GostAsymmetricAlgorithm(string pfxPath, string pfxPassword, string thumbPrint)
          : this()
         {
@@ -64,8 +66,12 @@ namespace Smev3Client.Crypt
                     var passwordBytes = Encoding.UTF32.GetBytes(pfxPassword ?? string.Empty);
                     fixed (byte* ptrPassword = passwordBytes)
                     {
-                        _storeHandle = CApiLiteNative.PFXImportCertStore(ref pfxDataBlob, new IntPtr(ptrPassword),
-                            CApiLiteConsts.CRYPT_MACHINE_KEYSET | CApiLiteConsts.PKCS12_IMPORT_SILENT);
+                        lock (_lock)
+                        {
+                            _storeHandle = CApiLiteNative.PFXImportCertStore(ref pfxDataBlob, new IntPtr(ptrPassword),
+                                CApiLiteConsts.CRYPT_MACHINE_KEYSET | CApiLiteConsts.PKCS12_IMPORT_SILENT);
+                        }
+
                         if (_storeHandle.IsInvalid)
                         {
                             throw new CApiLiteLastErrorException(nameof(CApiLiteNative.PFXImportCertStore));

@@ -6,7 +6,7 @@ using Smev3Client.Smev;
 
 namespace Smev3Client
 {
-    public interface ISmev3Client: IDisposable
+    public interface ISmev3Client : IDisposable
     {
         /// <summary>
         /// Отправка запроса
@@ -27,7 +27,7 @@ namespace Smev3Client
         /// <param name="rootElementLocalName"></param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
-        Task<Smev3ClientResponse> GetResponseAsync(Uri namespaceUri, string rootElementLocalName, 
+        Task<Smev3ClientResponse> GetResponseAsync(Uri namespaceUri, string rootElementLocalName,
                                             CancellationToken cancellationToken);
 
         /// <summary>

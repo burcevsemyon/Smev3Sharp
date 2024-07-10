@@ -1,9 +1,9 @@
 ﻿namespace Smev3Client
 {
-    public class SmevServiceConfig 
+    public class SmevServiceConfig
     {
         public SmevServiceConfig()
-        {            
+        {
         }
 
         public SmevServiceConfig(SmevServiceConfig src)
@@ -16,8 +16,8 @@
         /// <summary>
         /// Путь к pfx файлу
         /// </summary>
-        public string  Container { get; set; }
-        
+        public string Container { get; set; }
+
         /// <summary>
         /// Пароль
         /// </summary>

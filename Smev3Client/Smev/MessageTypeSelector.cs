@@ -18,14 +18,13 @@ namespace Smev3Client.Smev
     {
         public MessageTypeSelector()
         {
-
         }
 
         public MessageTypeSelector(Uri namespaceURI, string rootElementLocalName)
         {
             if (!string.IsNullOrWhiteSpace(namespaceURI?.OriginalString) || !string.IsNullOrWhiteSpace(rootElementLocalName))
             {
-                var paramName = string.IsNullOrWhiteSpace(namespaceURI?.OriginalString) ? nameof(namespaceURI) 
+                var paramName = string.IsNullOrWhiteSpace(namespaceURI?.OriginalString) ? nameof(namespaceURI)
                     : string.IsNullOrWhiteSpace(rootElementLocalName) ? nameof(rootElementLocalName) : null;
 
                 if (!string.IsNullOrWhiteSpace(paramName))

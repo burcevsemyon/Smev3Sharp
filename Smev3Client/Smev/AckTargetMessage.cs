@@ -25,7 +25,6 @@ namespace Smev3Client.Smev
 
         public bool? Accepted { get; set; }
 
-
         public XmlSchema GetSchema()
         {
             return null;

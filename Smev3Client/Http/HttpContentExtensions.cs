@@ -20,13 +20,12 @@ namespace Smev3Client.Http
         {
             var stream = await httpContent.ReadSoapBodyAsStreamAsync(cancellationToken)
                                             .ConfigureAwait(false);
-            
 
             var reader = XmlReader.Create(stream, new XmlReaderSettings
-                                                {
-                                                    IgnoreWhitespace = true,
-                                                    IgnoreProcessingInstructions = true
-                                                });
+            {
+                IgnoreWhitespace = true,
+                IgnoreProcessingInstructions = true
+            });
 
             var serializer = new XmlSerializer(typeof(SoapEnvelope<T>));
 

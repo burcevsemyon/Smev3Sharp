@@ -8,9 +8,9 @@ using Smev3Client.Xml;
 namespace Smev3Client.Smev
 {
     public class MessagePrimaryContent<T> :
-        IXmlSerializable where T: new()
+        IXmlSerializable where T : new()
     {
-        public MessagePrimaryContent(){}
+        public MessagePrimaryContent() { }
 
         public MessagePrimaryContent(T content)
         {
@@ -32,7 +32,7 @@ namespace Smev3Client.Smev
                 "MessagePrimaryContent", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2, required: true,
                 (contentReader) =>
                 {
-                    if(typeof(T) == typeof(MessagePrimaryContentXml))
+                    if (typeof(T) == typeof(MessagePrimaryContentXml))
                     {
                         var content = new T();
 

@@ -80,7 +80,7 @@ namespace Smev3Client
 
         private void ThrowIfDisposed()
         {
-            if(_httpResponse == null)
+            if (_httpResponse == null)
             {
                 throw new ObjectDisposedException(nameof(Smev3ClientResponse));
             }

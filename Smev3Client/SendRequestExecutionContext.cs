@@ -2,7 +2,7 @@
 
 namespace Smev3Client
 {
-    public class SendRequestExecutionContext<T> where T: new()
+    public class SendRequestExecutionContext<T> where T : new()
     {
         /// <summary>
         /// Данные запроса

@@ -9,9 +9,9 @@ namespace Smev3Client.Smev
     /// <summary>
     /// Тело метода SendRequest
     /// </summary>
-    public class SendRequestRequest<T>:         
+    public class SendRequestRequest<T> :
         ISoapEnvelopeBody,
-        ISmev3Envelope 
+        ISmev3Envelope
         where T : new()
     {
         #region members
@@ -33,7 +33,7 @@ namespace Smev3Client.Smev
             ISmev3XmlSigner signer)
         {
             _signer = signer ?? throw new ArgumentNullException(nameof(signer));
-            
+
             _requestData = requestData ?? throw new ArgumentNullException(nameof(requestData));
 
             _soapEnvelope = new SoapEnvelope<SendRequestRequest<T>>
@@ -70,7 +70,7 @@ namespace Smev3Client.Smev
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteStartElement("SendRequestRequest", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2);
-            
+
             _requestData.WriteXml(writer);
 
             writer.WriteStartElement("CallerInformationSystemSignature");
@@ -84,7 +84,7 @@ namespace Smev3Client.Smev
 
             writer.WriteEndElement();
         }
-        
+
         #endregion
     }
 }

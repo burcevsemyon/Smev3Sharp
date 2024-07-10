@@ -5,7 +5,7 @@ namespace Smev3Client.Utils
 {
     public static class Rfc4122
     {
-        private static readonly DateTimeOffset _startDate = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);        
+        private static readonly DateTimeOffset _startDate = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);
 
         private static byte[] GetCalendarStartElapsedTicksBytes()
         {
@@ -17,11 +17,11 @@ namespace Smev3Client.Utils
             Span<byte> uuidBytes = stackalloc byte[16];
 
             var ticksBytes = GetCalendarStartElapsedTicksBytes();
-            for ( var i = 0; i < ticksBytes.Length; i++)
+            for (var i = 0; i < ticksBytes.Length; i++)
             {
                 uuidBytes[i] = ticksBytes[i];
             }
-            
+
             RandomNumberGenerator.Fill(uuidBytes[8..]);
 
             // version V1

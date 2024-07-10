@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace Smev3Client.Soap
 {
-    public class SoapAction: IXmlSerializable
+    public class SoapAction : IXmlSerializable
     {
         private readonly string _actionName;
 
@@ -15,7 +15,7 @@ namespace Smev3Client.Soap
 
         public SoapAction(string actionName)
         {
-            _actionName = actionName ?? 
+            _actionName = actionName ??
                 throw new ArgumentNullException(nameof(actionName));
         }
 

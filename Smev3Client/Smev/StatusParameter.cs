@@ -3,11 +3,9 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-using Smev3Client.Xml;
-
 namespace Smev3Client.Smev
 {
-    public class StatusParameter: IXmlSerializable
+    public class StatusParameter : IXmlSerializable
     {
         public string Key { get; set; }
 

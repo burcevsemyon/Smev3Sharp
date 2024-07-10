@@ -3,10 +3,10 @@ using System.Net.Http;
 
 namespace Smev3Client
 {
-    internal class Smev3ClientContext: ISmev3ClientContext
+    internal class Smev3ClientContext : ISmev3ClientContext
     {
         internal Smev3ClientContext(
-            IHttpClientFactory httpClientFactory, 
+            IHttpClientFactory httpClientFactory,
             SmevServiceConfig smevServiceConfig)
         {
             HttpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
@@ -16,7 +16,7 @@ namespace Smev3Client
         /// <summary>
         /// Фабрика клиреез клиента
         /// </summary>
-        public IHttpClientFactory HttpClientFactory { get;  }
+        public IHttpClientFactory HttpClientFactory { get; }
 
         /// <summary>
         /// Конфигурация сервиса СМЭВ

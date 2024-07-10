@@ -7,15 +7,17 @@ namespace Smev3Client
 {
     public static class Smev3XmlSerializer
     {
-        public static XmlElement ToXmlElement<T>(T i) where T: new()
+        public static XmlElement ToXmlElement<T>(T i) where T : new()
         {
             using var stream = new MemoryStream();
 
             using var writer = XmlWriter.Create(stream,
-                new XmlWriterSettings {
+                new XmlWriterSettings
+                {
                     Indent = false,
                     Encoding = new UTF8Encoding(false),
-                    OmitXmlDeclaration = true });
+                    OmitXmlDeclaration = true
+                });
 
             var serializer = new XmlSerializer(typeof(T));
 

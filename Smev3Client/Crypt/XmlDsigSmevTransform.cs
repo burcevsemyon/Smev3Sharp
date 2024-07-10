@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography.Xml;
 using System.Xml;
@@ -9,7 +8,7 @@ namespace Smev3Client
 {
     class XmlDsigSmevTransform : Transform
     {
-        private static readonly Type[] _inputOutputTypes = new[] { typeof(XmlDocument) };        
+        private static readonly Type[] _inputOutputTypes = new[] { typeof(XmlDocument) };
 
         private XmlDocument _inputDocument;
 
@@ -30,7 +29,7 @@ namespace Smev3Client
         }
 
         void CloneAttributes(
-            XmlNode dstNode, 
+            XmlNode dstNode,
             XmlNode srcNode,
             Stack<(string prefix, string namespaceURI)?> namespacesStack,
             ref int nsIndex)
@@ -49,7 +48,7 @@ namespace Smev3Client
                 var localName = srcAttrubute.LocalName;
                 var namespaceURI = srcAttrubute.NamespaceURI;
                 if (srcAttrubute.LocalName == "xmlns")
-                {   
+                {
                     prefix = "xmlns";
                     var @namespace = namespacesStack.FirstOrDefault(i => i.Value.namespaceURI == srcNode.NamespaceURI);
                     if (@namespace == null)
@@ -58,7 +57,7 @@ namespace Smev3Client
                         namespacesStack.Push(@namespace);
                     }
 
-                    localName = @namespace.Value.prefix;                    
+                    localName = @namespace.Value.prefix;
                 }
 
                 var newAttribute = dstDocument.CreateAttribute(
@@ -84,7 +83,6 @@ namespace Smev3Client
             {
                 return;
             }
-
 
             if (srcNode.NodeType == XmlNodeType.Attribute)
             {
@@ -152,7 +150,7 @@ namespace Smev3Client
                         outDocument,
                         _inputDocument.ChildNodes[i],
                         namespaceStack,
-                        ref nsIndex);               
+                        ref nsIndex);
             }
 
             return outDocument;
@@ -184,4 +182,3 @@ namespace Smev3Client
         }
     }
 }
-

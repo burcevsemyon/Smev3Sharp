@@ -53,7 +53,7 @@ namespace Smev3Client
         /// <summary>
         /// Отправка запроса
         /// </summary>
-        /// <typeparam name="TServiceRequest"></typeparam>
+        /// <typeparam name="TServiceRequest">Тип запроса</typeparam>
         /// <param name="context">Параметры метода</param>
         /// <param name="cancellationToken">Токен отмены</param>
         /// <returns></returns>
@@ -226,7 +226,7 @@ namespace Smev3Client
 
                 httpResponse = await httpClient.PostAsync(string.Empty, content, cancellationToken)
                                                .ConfigureAwait(false);
-                
+
                 if (httpResponse.IsSuccessStatusCode)
                 {
                     return httpResponse;

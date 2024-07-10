@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Smev3Client.Tests
 {
-    [XmlRoot("FakeSmevServiceResponse", 
+    [XmlRoot("FakeSmevServiceResponse",
         Namespace = "urn://fake-smev-service-response",
         IsNullable = false)]
     public class FakeSmevServiceResponse

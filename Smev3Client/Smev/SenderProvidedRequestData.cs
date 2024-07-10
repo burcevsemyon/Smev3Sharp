@@ -5,22 +5,21 @@ using System.Xml.Serialization;
 
 namespace Smev3Client.Smev
 {
-    public class SenderProvidedRequestData<T>: 
+    public class SenderProvidedRequestData<T> :
         IXmlSerializable where T : new()
     {
         public SenderProvidedRequestData()
         {
-
         }
 
         public SenderProvidedRequestData(
-            Guid messageId, 
+            Guid messageId,
             string xmlElementId,
             MessagePrimaryContent<T> content)
         {
             MessageId = messageId;
 
-            Content = content 
+            Content = content
                 ?? throw new ArgumentNullException(nameof(content));
 
             Id = xmlElementId;

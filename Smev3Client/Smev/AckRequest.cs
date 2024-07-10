@@ -1,9 +1,8 @@
-﻿using Smev3Client.Soap;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Xml;
 using System.Xml.Schema;
+
+using Smev3Client.Soap;
 
 namespace Smev3Client.Smev
 {

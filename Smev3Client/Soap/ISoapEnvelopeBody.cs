@@ -3,6 +3,6 @@
 namespace Smev3Client.Soap
 {
     public interface ISoapEnvelopeBody : IXmlSerializable
-    {       
+    {
     }
 }

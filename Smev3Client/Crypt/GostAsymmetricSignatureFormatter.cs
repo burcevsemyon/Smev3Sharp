@@ -13,7 +13,6 @@ namespace Smev3Client.Crypt
 
         public override void SetHashAlgorithm(string strName)
         {
-            
         }
 
         public override void SetKey(AsymmetricAlgorithm key)

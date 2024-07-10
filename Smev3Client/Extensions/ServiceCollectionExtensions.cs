@@ -21,10 +21,10 @@ namespace Smev3Client.Extensions
             serviceCollection.AddSingleton<ISmev3ClientFactory>((serviceProvider) =>
             {
                 var config = serviceProvider.GetRequiredService<IConfiguration>();
-                
+
                 var servicesConfigs = config.GetSection("Smev:Services")
                                                 .Get<Dictionary<string, SmevServiceConfig>>();
-                
+
                 var httpClientFactory = serviceProvider
                                                 .GetRequiredService<IHttpClientFactory>();
 

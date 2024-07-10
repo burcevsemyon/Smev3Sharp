@@ -3,8 +3,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-using Smev3Client.Xml;
-
 namespace Smev3Client.Smev
 {
     public class RequestStatus : IXmlSerializable
@@ -18,7 +16,6 @@ namespace Smev3Client.Smev
         /// Бизнес статус запроса, в человекочитаемом виде.
         /// </summary>
         public string StatusDescription { get; set; }
-
 
         public StatusParameter[] StatusParameters { get; set; }
 
