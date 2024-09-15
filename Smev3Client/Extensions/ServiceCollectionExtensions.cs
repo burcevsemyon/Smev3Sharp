@@ -9,7 +9,13 @@ namespace Smev3Client.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        [Obsolete("Используйте AddSmev3Client")]
         public static void UseSmev3Client(this IServiceCollection serviceCollection)
+        {
+            AddSmev3Client(serviceCollection);
+        }
+
+        public static void AddSmev3Client(this IServiceCollection serviceCollection)
         {
             var httpClientBuilder = serviceCollection.AddHttpClient("SmevClient", (serviceProvider, httpClient) =>
             {
