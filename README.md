@@ -74,7 +74,7 @@ namespace Smev3ClientExample
 
             serviceCollection
                 .AddSingleton<IConfiguration>(configBuilder.Build())
-                .UseSmev3Client();
+                .AddSmev3Client();
 
             var services = serviceCollection.BuildServiceProvider();
 
