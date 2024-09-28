@@ -7,9 +7,6 @@ namespace Smev3Client
         /// <summary>
         /// Возвращает подпись xml елемента
         /// </summary>
-        /// <param name="xml"></param>
-        /// <param name="uri"></param>
-        /// <returns></returns>
         XmlElement SignXmlElement(XmlElement xml, string uri);
     }
 }

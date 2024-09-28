@@ -19,6 +19,8 @@ Microsoft.Extensions.Configuration.Binder 5.0.0
 CryptoApiLiteSharp 1.1.0  
 
 * [Конфигурирование](#Конфигурирование-через-appsettingsjson)
+    * [Конфигурирование через appsettings.json](#Конфигурирование-через-appsettingsjson)
+    * [Конфигурирование через делегат](#Конфигурирование-через-делегат)
 * [Подключение](#Подключение)
 * [Отправка запроса](#Отправка-запроса)
 * [Получение ответа](#Получение-нетипизированного-ответа)
@@ -46,6 +48,48 @@ CryptoApiLiteSharp 1.1.0
       }
     }
   }
+}
+```
+
+#### Конфигурирование через делегат:
+
+```csharp
+...
+
+namespace Smev3ClientExample
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            ...
+
+            serviceCollection
+                .AddSingleton<IConfiguration>(configBuilder.Build())
+                .AddSmev3Client(() => new SmevConfig
+                {
+                    Url = new Uri("http://smev3-n0.test.gosuslugi.ru:7500/smev/v1.2/ws"),
+                    ServiceConfigs = new List<SmevServiceConfig> 
+                    { 
+                        new() 
+                        {
+                            Mnemonic = "SMEV_SVC_MNEMONIC_1",
+                            Password = "password_to_pfx_1",
+                            Thumbprint = "thumbprint_of_cert",
+                            Container = "path_to_crypto_pro_pfx_1.pfx"
+                        } 
+                    }
+                });
+
+            var services = serviceCollection.BuildServiceProvider();
+
+            var factory = services.GetRequiredService<ISmev3ClientFactory>();
+
+            using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
+
+            ...
+        }
+    }
 }
 ```
 

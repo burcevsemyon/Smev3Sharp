@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
 
@@ -15,27 +16,40 @@ namespace Smev3Client.Extensions
             AddSmev3Client(serviceCollection);
         }
 
-        public static void AddSmev3Client(this IServiceCollection serviceCollection)
+        public static void AddSmev3Client(this IServiceCollection serviceCollection, Func<SmevConfig> configure = null)
         {
-            var httpClientBuilder = serviceCollection.AddHttpClient("SmevClient", (serviceProvider, httpClient) =>
+            using var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            var smevConfig = configure?.Invoke() ?? GetConfigFromAppConfig(configuration);
+
+            var httpClientBuilder = serviceCollection.AddHttpClient("SmevClient", (httpClient) => httpClient.BaseAddress = smevConfig.Url);
+
+            serviceCollection.AddSingleton<ISmev3ClientFactory>((sp) =>
             {
-                var config = serviceProvider.GetRequiredService<IConfiguration>();
+                var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
 
-                httpClient.BaseAddress = new Uri(config["Smev:Url"]);
+                return new Smev3ClientFactory(httpClientFactory, smevConfig.ServiceConfigs);
             });
+        }
 
-            serviceCollection.AddSingleton<ISmev3ClientFactory>((serviceProvider) =>
+        private static SmevConfig GetConfigFromAppConfig(IConfiguration config)
+        {
+            return new SmevConfig
             {
-                var config = serviceProvider.GetRequiredService<IConfiguration>();
-
-                var servicesConfigs = config.GetSection("Smev:Services")
-                                                .Get<Dictionary<string, SmevServiceConfig>>();
-
-                var httpClientFactory = serviceProvider
-                                                .GetRequiredService<IHttpClientFactory>();
-
-                return new Smev3ClientFactory(httpClientFactory, servicesConfigs);
-            });
+                Url = new Uri(config["Smev:Url"]),
+                ServiceConfigs = config.GetSection("Smev:Services")
+                                       .Get<Dictionary<string, SmevServiceConfig>>()
+                                       .Select(i => new SmevServiceConfig
+                                       {
+                                           Mnemonic = i.Key,
+                                           Container = i.Value.Container,
+                                           Password = i.Value.Password,
+                                           Thumbprint = i.Value.Thumbprint
+                                       })
+                                       .ToList()
+            };
         }
     }
 }

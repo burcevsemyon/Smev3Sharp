@@ -12,11 +12,11 @@ namespace Smev3Client
         /// <summary>
         /// Десткрипторы сервисов
         /// </summary>
-        private readonly Dictionary<string, SmevServiceConfig> _serviceConfigs;
+        private readonly List<SmevServiceConfig> _serviceConfigs;
 
         public Smev3ClientFactory(
             IHttpClientFactory httpClientFactory,
-            IDictionary<string, SmevServiceConfig> serviceConfigs)
+            List<SmevServiceConfig> serviceConfigs)
         {
             _httpClientFactory = httpClientFactory ??
                 throw new ArgumentNullException(nameof(httpClientFactory));
@@ -26,7 +26,7 @@ namespace Smev3Client
                 throw new ArgumentException("Не задано конфигураций ИС СМЭВ");
             }
 
-            _serviceConfigs = serviceConfigs.ToDictionary(i => i.Key, i => new SmevServiceConfig(i.Value));
+            _serviceConfigs = serviceConfigs.ConvertAll(i => new SmevServiceConfig(i));
         }
 
         public ISmev3Client Get(string mnemonic)
@@ -36,7 +36,7 @@ namespace Smev3Client
                 throw new ArgumentException("Мнемоника сервиса не может быть пустой строкой");
             }
 
-            if (!_serviceConfigs.ContainsKey(mnemonic))
+            if (!_serviceConfigs.Any(i => i.Mnemonic == mnemonic))
             {
                 throw new ArgumentException($"Сервис с мнемоникой {mnemonic} не зарегистрирован");
             }
@@ -44,7 +44,7 @@ namespace Smev3Client
             return new Smev3Client(new Smev3ClientContext
             (
                 _httpClientFactory,
-                new SmevServiceConfig(_serviceConfigs[mnemonic])
+                new SmevServiceConfig(_serviceConfigs.Find( i => i.Mnemonic == mnemonic))
             ));
         }
     }

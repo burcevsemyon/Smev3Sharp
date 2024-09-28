@@ -1,4 +1,6 @@
-﻿namespace Smev3Client
+﻿using System;
+
+namespace Smev3Client
 {
     public class SmevServiceConfig
     {
@@ -8,10 +10,21 @@
 
         public SmevServiceConfig(SmevServiceConfig src)
         {
-            Container = src?.Container;
-            Password = src?.Password;
-            Thumbprint = src?.Thumbprint;
+            if (src == null)
+            {
+                throw new ArgumentNullException(nameof(src));
+            }
+
+            Container = src.Container;
+            Password = src.Password;
+            Thumbprint = src.Thumbprint;
+            Mnemonic = src.Mnemonic;
         }
+
+        /// <summary>
+        /// Мнемоника сервиса
+        /// </summary>
+        public string Mnemonic { get; set; }
 
         /// <summary>
         /// Путь к pfx файлу
