@@ -22,7 +22,7 @@ namespace Smev3Client.Crypt
 
             signedXml.SafeCanonicalizationMethods.Add(XmlDsigSmevTransform.ALGORITHM);
 
-            Reference reference = new Reference
+            var reference = new Reference
             {
                 Uri = $"#{uri}",
                 DigestMethod = XmlDsigConsts.XmlDsigGost3411_2012_256Url

@@ -1,6 +1,8 @@
-﻿namespace Smev3Client
+﻿using System;
+
+namespace Smev3Client
 {
-    public interface ISmev3ClientFactory
+    public interface ISmev3ClientFactory: IDisposable
     {
         /// <summary>
         /// Создание клиента по мнемонике сервиса

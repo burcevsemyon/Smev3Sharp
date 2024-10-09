@@ -1,13 +1,23 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+
+using Smev3Client.Crypt;
 
 namespace Smev3Client
 {
     internal class Smev3ClientFactory : ISmev3ClientFactory
     {
         private readonly IHttpClientFactory _httpClientFactory;
+
+        private readonly ConcurrentDictionary<string, Tuple<Smev3Client, GostAsymmetricAlgorithm>> _clients =
+                                    new ConcurrentDictionary<string, Tuple<Smev3Client, GostAsymmetricAlgorithm>>();
+
+        ~Smev3ClientFactory()
+        {
+            Dispose();
+        }
 
         /// <summary>
         /// Десткрипторы сервисов
@@ -36,16 +46,34 @@ namespace Smev3Client
                 throw new ArgumentException("Мнемоника сервиса не может быть пустой строкой");
             }
 
-            if (!_serviceConfigs.Any(i => i.Mnemonic == mnemonic))
+            return _clients.GetOrAdd(mnemonic, (mmk) =>
             {
-                throw new ArgumentException($"Сервис с мнемоникой {mnemonic} не зарегистрирован");
+                var config = _serviceConfigs.Find(i => i.Mnemonic == mmk)
+                    ?? throw new ArgumentException($"Сервис с мнемоникой {mmk} не зарегистрирован");
+
+                var algorithm = new GostAsymmetricAlgorithm(config.Container, config.Password, config.Thumbprint);
+
+                return Tuple.Create(
+                    new Smev3Client(_httpClientFactory.CreateClient("SmevClient"), new Smev3XmlSigner(algorithm)),
+                                                                                                                algorithm);
+            })
+            .Item1;
+        }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            foreach (var client in _clients)
+            {
+                client.Value.Item2.Dispose();
             }
 
-            return new Smev3Client(new Smev3ClientContext
-            (
-                _httpClientFactory,
-                new SmevServiceConfig(_serviceConfigs.Find( i => i.Mnemonic == mnemonic))
-            ));
+            _clients.Clear();
+
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
     }
 }

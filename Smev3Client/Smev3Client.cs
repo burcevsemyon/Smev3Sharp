@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Net.Http.Headers;
 
-using Smev3Client.Crypt;
 using Smev3Client.Utils;
 using Smev3Client.Smev;
 using Smev3Client.Soap;
@@ -17,37 +16,19 @@ namespace Smev3Client
     {
         #region members
 
-        /// <summary>
-        /// Параметры клиента
-        /// </summary>
-        private ISmev3ClientContext _context;
+        private readonly HttpClient _httpClient;
 
-        /// <summary>
-        /// Криптоалгоритм
-        /// </summary>
-        private GostAsymmetricAlgorithm _algorithm;
+        private readonly ISmev3XmlSigner _signer;
 
-        /// <summary>
-        /// Флаг утилизированого объекта
-        /// </summary>
-        private bool _disposed = false;
+        #endregion
 
-        #endregion        
-
-        public Smev3Client(ISmev3ClientContext context)
+        public Smev3Client(HttpClient httpClient, ISmev3XmlSigner signer)
         {
-            _context = context ??
-                throw new ArgumentNullException(nameof(context));
+            _httpClient = httpClient ??
+                throw new ArgumentNullException(nameof(httpClient));
 
-            _algorithm = new GostAsymmetricAlgorithm(
-                                context.SmevServiceConfig.Container,
-                                context.SmevServiceConfig.Password,
-                                context.SmevServiceConfig.Thumbprint);
-        }
-
-        ~Smev3Client()
-        {
-            Dispose(false);
+            _signer = signer ??
+                throw new ArgumentNullException(nameof(signer));
         }
 
         /// <summary>
@@ -60,8 +41,6 @@ namespace Smev3Client
                                                                       CancellationToken cancellationToken)
             where TServiceRequest : new()
         {
-            ThrowIfDisposed();
-
             HttpResponseMessage httpResponse = null;
             try
             {
@@ -73,7 +52,7 @@ namespace Smev3Client
                             content: new MessagePrimaryContent<TServiceRequest>(context.RequestData)
                             )
                         { TestMessage = context.IsTest },
-                        signer: new Smev3XmlSigner(_algorithm)
+                        signer: _signer
                     );
 
                 var envelopeBytes = envelope.Get();
@@ -104,15 +83,13 @@ namespace Smev3Client
         public async Task<Smev3ClientResponse> GetResponseAsync(Uri namespaceUri, string rootElementLocalName,
                                                     CancellationToken cancellationToken)
         {
-            ThrowIfDisposed();
-
             var envelope = new GetResponseRequest(
                     requestData: new MessageTypeSelector(namespaceUri, rootElementLocalName)
                     {
                         Timestamp = DateTime.Now,
                         Id = "SIGNED_BY_CONSUMER"
                     },
-                    signer: new Smev3XmlSigner(_algorithm));
+                    signer: _signer);
 
             var envelopeBytes = envelope.Get();
 
@@ -143,15 +120,13 @@ namespace Smev3Client
         /// </summary>
         public async Task<Smev3ClientResponse<AckResponse>> AckAsync(Guid messageId, CancellationToken cancellationToken)
         {
-            ThrowIfDisposed();
-
             var envelope = new AckRequest(
                     new AckTargetMessage
                     {
                         MessageID = messageId,
                         Id = "SIGNED_BY_CALLER"
                     },
-                    signer: new Smev3XmlSigner(_algorithm));
+                    signer: _signer);
 
             var envelopeBytes = envelope.Get();
 
@@ -168,17 +143,6 @@ namespace Smev3Client
 
         public void Dispose()
         {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool _)
-        {
-            _algorithm?.Dispose();
-            _algorithm = null;
-            _context = null;
-            _disposed = true;
         }
 
         #endregion
@@ -188,8 +152,6 @@ namespace Smev3Client
         /// <summary>
         /// Отправка конверта
         /// </summary>
-        /// <param name="envelopeBytes"></param>
-        /// <param name="cancellationToken"></param>
         private async Task<HttpResponseMessage> SendAsync(byte[] envelopeBytes, CancellationToken cancellationToken)
         {
             if (envelopeBytes == null)
@@ -208,9 +170,7 @@ namespace Smev3Client
             HttpResponseMessage httpResponse = null;
             try
             {
-                using var httpClient = _context.HttpClientFactory.CreateClient("SmevClient");
-
-                httpResponse = await httpClient.PostAsync(string.Empty, content, cancellationToken)
+                httpResponse = await _httpClient.PostAsync(string.Empty, content, cancellationToken)
                                                .ConfigureAwait(false);
 
                 if (httpResponse.IsSuccessStatusCode)
@@ -232,17 +192,6 @@ namespace Smev3Client
                 httpResponse?.Dispose();
 
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Бросает исключение если объект утилизирован
-        /// </summary>
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(nameof(Smev3Client));
             }
         }
 
