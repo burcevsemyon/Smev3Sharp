@@ -53,9 +53,18 @@ namespace Smev3Client
 
                 var algorithm = new GostAsymmetricAlgorithm(config.Container, config.Password, config.Thumbprint);
 
-                return (client: new Smev3Client(_httpClientFactory.CreateClient("SmevClient"),
-                                                                        new Smev3XmlSigner(algorithm)),
-                                                                                              algorithm);
+                try
+                {
+                    return (client: new Smev3Client(_httpClientFactory.CreateClient("SmevClient"),
+                                                        new Smev3XmlSigner(algorithm)),
+                                                                              algorithm);
+                }
+                catch
+                {
+                    algorithm.Dispose();
+
+                    throw;
+                }
             })
             .client;
         }
