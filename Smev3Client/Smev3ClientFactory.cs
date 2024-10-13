@@ -11,8 +11,8 @@ namespace Smev3Client
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly ConcurrentDictionary<string, Tuple<Smev3Client, GostAsymmetricAlgorithm>> _clients =
-                                    new ConcurrentDictionary<string, Tuple<Smev3Client, GostAsymmetricAlgorithm>>();
+        private readonly ConcurrentDictionary<string, (Smev3Client client, GostAsymmetricAlgorithm algorithm)> _clientsDic =
+                                    new ConcurrentDictionary<string, (Smev3Client client, GostAsymmetricAlgorithm algorithm)>();
 
         ~Smev3ClientFactory()
         {
@@ -46,30 +46,30 @@ namespace Smev3Client
                 throw new ArgumentException("Мнемоника сервиса не может быть пустой строкой");
             }
 
-            return _clients.GetOrAdd(mnemonic, (mmk) =>
+            return _clientsDic.GetOrAdd(mnemonic, (mmk) =>
             {
                 var config = _serviceConfigs.Find(i => i.Mnemonic == mmk)
                     ?? throw new ArgumentException($"Сервис с мнемоникой {mmk} не зарегистрирован");
 
                 var algorithm = new GostAsymmetricAlgorithm(config.Container, config.Password, config.Thumbprint);
 
-                return Tuple.Create(
-                    new Smev3Client(_httpClientFactory.CreateClient("SmevClient"), new Smev3XmlSigner(algorithm)),
-                                                                                                                algorithm);
+                return (client: new Smev3Client(_httpClientFactory.CreateClient("SmevClient"),
+                                                                        new Smev3XmlSigner(algorithm)),
+                                                                                              algorithm);
             })
-            .Item1;
+            .client;
         }
 
         #region IDisposable
 
         public void Dispose()
         {
-            foreach (var client in _clients)
+            foreach (var item in _clientsDic)
             {
-                client.Value.Item2.Dispose();
+                item.Value.algorithm.Dispose();
             }
 
-            _clients.Clear();
+            _clientsDic.Clear();
 
             GC.SuppressFinalize(this);
         }
