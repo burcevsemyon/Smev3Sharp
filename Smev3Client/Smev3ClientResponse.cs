@@ -25,7 +25,6 @@ namespace Smev3Client
         /// <summary>
         /// Открепляет HTTP ответ. Далее нельзя вызывать никакие методы объекта кроме Dispose
         /// </summary>
-        /// <returns></returns>
         internal HttpResponseMessage DetachHttpResponse()
         {
             var response = _httpResponse;
@@ -38,8 +37,6 @@ namespace Smev3Client
         /// <summary>
         /// Чтение элемента Body содержимого ответа как тип T
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public Task<T> ReadSoapBodyAsAsync<T>(CancellationToken cancellationToken = default)
             where T : ISoapEnvelopeBody, new()
         {
@@ -50,8 +47,7 @@ namespace Smev3Client
 
         /// <summary>
         /// Чтение ответа в строку
-        /// </summary>
-        /// <returns></returns>
+        /// </summary>        
         public Task<string> ReadSoapBodyAsStringAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();

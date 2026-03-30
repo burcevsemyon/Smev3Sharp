@@ -116,8 +116,6 @@ namespace Smev3Client.Crypt
         /// <summary>
         /// Подпись хэш
         /// </summary>
-        /// <param name="hashData"></param>
-        /// <returns></returns>
         public unsafe byte[] CreateHashSignature(byte[] hashData)
         {
             if (hashData == null || hashData.Length == 0)
@@ -181,7 +179,7 @@ namespace Smev3Client.Crypt
 
         private unsafe byte[] GetCertRawData()
         {
-            if (_certHandle == null || _certHandle.IsInvalid)
+            if (_certHandle?.IsInvalid == true)
             {
                 throw new Exception("Объект не инициалирован.");
             }
@@ -220,10 +218,10 @@ namespace Smev3Client.Crypt
                 return (byte)(val - '0');
 
             if (val >= 'a' && val <= 'f')
-                return (byte)((val - 'a') + 10);
+                return (byte)(val - 'a' + 10);
 
             if (val >= 'A' && val <= 'F')
-                return (byte)((val - 'A') + 10);
+                return (byte)(val - 'A' + 10);
 
             return 0xFF;
         }

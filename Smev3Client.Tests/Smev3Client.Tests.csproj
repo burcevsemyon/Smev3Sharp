@@ -21,19 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\GetResponseResponce_EmptyQueue.xml">
+    <None Update="TestData\GetResponseResponse_EmptyQueue.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\GetResponseResponce_InvalidContent.xml">
+    <None Update="TestData\GetResponseResponse_InvalidContent.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\GetResponseResponce_MultipartEmptyQueue.xml">
+    <None Update="TestData\GetResponseResponse_MultipartEmptyQueue.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\GetResponseResponse_ValidResponse.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\SendRequestResponce.xml">
+    <None Update="TestData\SendRequestResponse.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\SoapFaultResponse_SignatureVerificationFault.xml">
