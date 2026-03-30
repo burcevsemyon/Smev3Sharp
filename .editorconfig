@@ -1,0 +1,8 @@
+root = true
+
+# Analyzer configuration for this repository.
+
+[*.cs]
+# Library code should avoid capturing SynchronizationContext by default.
+dotnet_diagnostic.CA2007.severity = warning
+

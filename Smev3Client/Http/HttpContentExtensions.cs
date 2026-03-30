@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
@@ -17,28 +18,28 @@ namespace Smev3Client.Http
 {
     internal static class HttpContentExtensions
     {
+        private static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings
+        {
+            IgnoreWhitespace = true,
+            IgnoreProcessingInstructions = true,
+            DtdProcessing = DtdProcessing.Prohibit,
+            XmlResolver = null
+        };
+        
         private static readonly ConcurrentDictionary<Type, XmlSerializer> SerializersCache = new ConcurrentDictionary<Type, XmlSerializer>();
         
         internal static async Task<T> ReadSoapBodyAsAsync<T>(
             this HttpContent httpContent, CancellationToken cancellationToken)
             where T : ISoapEnvelopeBody, new()
         {
-            await using var stream = await httpContent.ReadSoapBodyAsStreamAsync(cancellationToken)
+            using var stream = await httpContent.ReadSoapBodyAsStreamAsync(cancellationToken)
                                                   .ConfigureAwait(false);
 
             cancellationToken.ThrowIfCancellationRequested();
-
-            var readerSettings = new XmlReaderSettings
-            {
-                IgnoreWhitespace = true,
-                IgnoreProcessingInstructions = true,
-                DtdProcessing = DtdProcessing.Prohibit,
-                XmlResolver = null
-            };
             
             var serializer = SerializersCache.GetOrAdd(typeof(SoapEnvelope<T>), type => new XmlSerializer(type));
 
-            using var reader = XmlReader.Create(stream, readerSettings);
+            using var reader = XmlReader.Create(stream, XmlReaderSettings);
 
             var envelope = (SoapEnvelope<T>)serializer.Deserialize(reader);
 
@@ -48,13 +49,14 @@ namespace Smev3Client.Http
         internal static async Task<string> ReadSoapBodyAsStringAsync(
             this HttpContent httpContent, CancellationToken cancellationToken)
         {
-            await using var stream = await httpContent
+            using var stream = await httpContent
                                             .ReadSoapBodyAsStreamAsync(cancellationToken)
-                                            .ConfigureAwait(false);
+                                                .ConfigureAwait(false);
             
             using var streamReader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
 
-            return await streamReader.ReadToEndAsync();
+            return await streamReader.ReadToEndAsync()
+                                        .ConfigureAwait(false);
         }
 
         private static async Task<Stream> ReadSoapBodyAsStreamAsync(
@@ -69,7 +71,7 @@ namespace Smev3Client.Http
                 
                 contentStream.SeekToBeginIfPossible();
 
-                if (!httpContent.IsMimeMultipartContent(out var boundary))
+                if (!httpContent.TryGetMultipartContentBoundary(out var boundary))
                 {
                     return contentStream;
                 }
@@ -84,7 +86,8 @@ namespace Smev3Client.Http
                     return section.Body.SeekToBeginIfPossible();
                 }
                 
-                await contentStream.DisposeAsync();
+                await contentStream.DisposeAsync()
+                                    .ConfigureAwait(false);
                 
                 return new MemoryStream(Array.Empty<byte>(), false);
             }
@@ -92,13 +95,14 @@ namespace Smev3Client.Http
             {
                 if (contentStream != null)
                 {
-                    await contentStream.DisposeAsync();
+                    await contentStream.DisposeAsync()
+                                        .ConfigureAwait(false);
                 }
                 throw;
             }
         }
 
-        private static bool IsMimeMultipartContent(this HttpContent httpContent, out string boundary)
+        private static bool TryGetMultipartContentBoundary(this HttpContent httpContent, [NotNullWhen(true)] out string? boundary)
         {
             boundary = null;
 
@@ -112,8 +116,8 @@ namespace Smev3Client.Http
                 i.Name.Equals("boundary", StringComparison.OrdinalIgnoreCase));
 
             boundary = param?.Value?.Trim(' ').Trim('"');
+            
             return string.IsNullOrWhiteSpace(boundary) ? throw
-                // RFC: multipart/* requires a boundary parameter, otherwise the payload cannot be reliably parsed.
                 new InvalidOperationException("Invalid multipart content: missing required 'boundary' parameter in Content-Type.") : true;
         }
 

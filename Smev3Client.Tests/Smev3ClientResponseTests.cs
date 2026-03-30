@@ -122,7 +122,7 @@ namespace Smev3Client.Tests
         {
             var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_InvalidContent.xml"))
+                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_InvalidContent.xml").ConfigureAwait(false))
             };
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
@@ -137,7 +137,7 @@ namespace Smev3Client.Tests
         {
             var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_ValidResponse.xml"))
+                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_ValidResponse.xml").ConfigureAwait(false))
             };
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
@@ -152,7 +152,7 @@ namespace Smev3Client.Tests
         {
             var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_InvalidContent.xml"))
+                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_InvalidContent.xml").ConfigureAwait(false))
             };
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
@@ -167,7 +167,7 @@ namespace Smev3Client.Tests
         {
             var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_EmptyQueue.xml"))
+                Content = new StringContent(await File.ReadAllTextAsync("TestData/GetResponseResponse_EmptyQueue.xml").ConfigureAwait(false))
             };
 
             var smevResponse = new Smev3ClientResponse(httpResponse);
@@ -182,7 +182,7 @@ namespace Smev3Client.Tests
         [TestMethod]
         public async Task ReadGetResponseResponse_MultipartEmptyQueue()
         {
-            var xmlBytes = await File.ReadAllBytesAsync("TestData/GetResponseResponse_MultipartEmptyQueue.xml");
+            var xmlBytes = await File.ReadAllBytesAsync("TestData/GetResponseResponse_MultipartEmptyQueue.xml").ConfigureAwait(false);
 
             var nonSeekable = new NonSeekableStream(new MemoryStream(xmlBytes));
             var content = new StreamContent(nonSeekable);
@@ -202,10 +202,11 @@ namespace Smev3Client.Tests
             Assert.IsNull(response.ResponseMessage.Response);
         }
 
+        // RFC: multipart/* requires a boundary parameter, otherwise the payload cannot be reliably parsed.
         [TestMethod]
         public async Task ReadSoapBodyAsAsync_MultipartWithoutBoundary_ShouldThrow()
         {
-            var soapFaultXml = await File.ReadAllTextAsync("TestData/SoapFaultResponse.xml");
+            var soapFaultXml = await File.ReadAllTextAsync("TestData/SoapFaultResponse.xml").ConfigureAwait(false);
 
             var httpContent = new StringContent(soapFaultXml, Encoding.UTF8, "text/xml");
             httpContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/mixed"); // no boundary
@@ -214,7 +215,7 @@ namespace Smev3Client.Tests
             var smevResponse = new Smev3ClientResponse(httpResponse);
 
             await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
-                smevResponse.ReadSoapBodyAsAsync<SoapFault>(CancellationToken.None));
+                smevResponse.ReadSoapBodyAsAsync<SoapFault>(CancellationToken.None)).ConfigureAwait(false);
         }
     }
 }

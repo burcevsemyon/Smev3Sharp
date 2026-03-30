@@ -12,7 +12,7 @@ using Smev3Client.Http;
 
 namespace Smev3Client
 {
-    internal class Smev3Client : IDisposable, ISmev3Client
+    internal class Smev3Client : ISmev3Client
     {
         #region members
 
@@ -47,7 +47,7 @@ namespace Smev3Client
                 var envelope = new SendRequestRequest<TServiceRequest>
                     (
                         requestData: new SenderProvidedRequestData<TServiceRequest>(
-                            messageId: Rfc4122.GenerateUUIDv1(),
+                            messageId: GuidGenerator.NewTimeGuid(),
                             xmlElementId: "SIGNED_BY_CONSUMER",
                             content: new MessagePrimaryContent<TServiceRequest>(context.RequestData)
                             )
@@ -100,7 +100,7 @@ namespace Smev3Client
         }
 
         /// <summary>
-        /// Получение сообщения из очереди входящих ответов c десереализацией ответа в тип T
+        /// Получение сообщения из очереди входящих ответов c деcсереализацией ответа в тип T
         /// </summary>
         public async Task<Smev3ClientResponse<GetResponseResponse<TServiceResponse>>> GetResponseAsync<TServiceResponse>(Uri namespaceUri, string rootElementLocalName,
                                                 CancellationToken cancellationToken)
@@ -109,7 +109,7 @@ namespace Smev3Client
             using var response = await GetResponseAsync(namespaceUri, rootElementLocalName, cancellationToken)
                                         .ConfigureAwait(false);
 
-            var data = await response.ReadSoapBodyAsAsync<GetResponseResponse<TServiceResponse>>()
+            var data = await response.ReadSoapBodyAsAsync<GetResponseResponse<TServiceResponse>>(cancellationToken)
                                         .ConfigureAwait(false);
 
             return new Smev3ClientResponse<GetResponseResponse<TServiceResponse>>(response.DetachHttpResponse(), data);

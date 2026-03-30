@@ -3,16 +3,16 @@ using System.Security.Cryptography;
 
 namespace Smev3Client.Utils
 {
-    public static class Rfc4122
+    public static class GuidGenerator
     {
-        private static readonly DateTimeOffset _startDate = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);
+        private static readonly DateTimeOffset StartDate = new DateTimeOffset(1582, 10, 15, 0, 0, 0, TimeSpan.Zero);
 
         private static byte[] GetCalendarStartElapsedTicksBytes()
         {
-            return BitConverter.GetBytes((DateTimeOffset.UtcNow - _startDate).Ticks);
+            return BitConverter.GetBytes((DateTimeOffset.UtcNow - StartDate).Ticks);
         }
-
-        public static unsafe Guid GenerateUUIDv1()
+        
+        public static unsafe Guid NewTimeGuid()
         {
             Span<byte> uuidBytes = stackalloc byte[16];
 
