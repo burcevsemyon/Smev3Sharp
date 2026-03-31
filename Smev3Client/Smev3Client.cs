@@ -47,7 +47,7 @@ namespace Smev3Client
                 var envelope = new SendRequestRequest<TServiceRequest>
                     (
                         requestData: new SenderProvidedRequestData<TServiceRequest>(
-                            messageId: GuidGenerator.NewTimeGuid(),
+                            messageId: TimeGuid.NewGuid(),
                             xmlElementId: "SIGNED_BY_CONSUMER",
                             content: new MessagePrimaryContent<TServiceRequest>(context.RequestData)
                             )
