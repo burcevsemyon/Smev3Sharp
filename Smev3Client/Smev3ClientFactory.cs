@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -19,10 +19,7 @@ namespace Smev3Client
             Dispose();
         }
 
-        /// <summary>
-        /// Десткрипторы сервисов
-        /// </summary>
-        private readonly List<SmevServiceConfig> _serviceConfigs;
+        private readonly IReadOnlyDictionary<string, SmevServiceConfig> _serviceConfigsByMnemonic;
 
         public Smev3ClientFactory(
             IHttpClientFactory httpClientFactory,
@@ -36,7 +33,18 @@ namespace Smev3Client
                 throw new ArgumentException("Не задано конфигураций ИС СМЭВ");
             }
 
-            _serviceConfigs = serviceConfigs.ConvertAll(i => new SmevServiceConfig(i));
+            var serviceConfigsByMnemonic = new Dictionary<string, SmevServiceConfig>(StringComparer.Ordinal);
+            foreach (var serviceConfig in serviceConfigs)
+            {
+                if (serviceConfig?.Mnemonic == null || serviceConfigsByMnemonic.ContainsKey(serviceConfig.Mnemonic))
+                {
+                    continue;
+                }
+
+                serviceConfigsByMnemonic.Add(serviceConfig.Mnemonic, new SmevServiceConfig(serviceConfig));
+            }
+
+            _serviceConfigsByMnemonic = serviceConfigsByMnemonic;
         }
 
         public ISmev3Client Get(string mnemonic)
@@ -48,8 +56,10 @@ namespace Smev3Client
 
             return _clientsDic.GetOrAdd(mnemonic, (mmk) =>
             {
-                var config = _serviceConfigs.Find(i => i.Mnemonic == mmk)
-                    ?? throw new ArgumentException($"Сервис с мнемоникой {mmk} не зарегистрирован");
+                if (!_serviceConfigsByMnemonic.TryGetValue(mmk, out var config))
+                {
+                    throw new ArgumentException($"Сервис с мнемоникой {mmk} не зарегистрирован");
+                }
 
                 var algorithm = new GostAsymmetricAlgorithm(config.Container, config.Password, config.Thumbprint);
 

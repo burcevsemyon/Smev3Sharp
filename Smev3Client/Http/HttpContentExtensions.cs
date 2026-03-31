@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Net.Http;
 using System.Threading;
@@ -110,10 +109,16 @@ namespace Smev3Client.Http
                 return false;
             }
 
-            var param = contentType.Parameters.FirstOrDefault(i =>
-                i.Name.Equals("boundary", StringComparison.OrdinalIgnoreCase));
+            foreach (var parameter in contentType.Parameters)
+            {
+                if (!parameter.Name.Equals("boundary", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
 
-            boundary = param?.Value?.Trim(' ').Trim('"');
+                boundary = parameter.Value?.Trim(' ').Trim('"');
+                break;
+            }
             
             return string.IsNullOrWhiteSpace(boundary) ? throw
                 new InvalidOperationException("Invalid multipart content: missing required 'boundary' parameter in Content-Type.") : true;
