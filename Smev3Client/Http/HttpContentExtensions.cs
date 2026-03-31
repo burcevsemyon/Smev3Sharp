@@ -34,8 +34,6 @@ namespace Smev3Client.Http
         {
             using var stream = await httpContent.ReadSoapBodyAsStreamAsync(cancellationToken)
                                                   .ConfigureAwait(false);
-
-            cancellationToken.ThrowIfCancellationRequested();
             
             var serializer = SerializersCache.GetOrAdd(typeof(SoapEnvelope<T>), type => new XmlSerializer(type));
 
