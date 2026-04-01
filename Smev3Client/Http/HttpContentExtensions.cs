@@ -44,7 +44,6 @@ namespace Smev3Client.Http
             using var stream = await httpContent
                                             .ReadSoapBodyAsStreamAsync(cancellationToken)
                                                 .ConfigureAwait(false);
-            
             using var streamReader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
 
             return await streamReader.ReadToEndAsync()

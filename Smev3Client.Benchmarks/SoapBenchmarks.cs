@@ -61,6 +61,30 @@ namespace Smev3Client.Benchmarks
             return await response.ReadSoapBodyAsAsync<GetResponseResponse<MultipartBenchmarkResponse>>().ConfigureAwait(false);
         }
 
+        [Benchmark]
+        public async Task<string> ReadSoapBodyAsString_SinglePart()
+        {
+            using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(SoapFaultXml, Encoding.UTF8, "text/xml")
+            };
+
+            using var response = new Smev3ClientResponse(httpResponse);
+            return await response.ReadSoapBodyAsStringAsync().ConfigureAwait(false);
+        }
+
+        [Benchmark]
+        public async Task<string> ReadSoapBodyAsString_Multipart()
+        {
+            using var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = CreateMultipartContent()
+            };
+
+            using var response = new Smev3ClientResponse(httpResponse);
+            return await response.ReadSoapBodyAsStringAsync().ConfigureAwait(false);
+        }
+
         private static HttpContent CreateMultipartContent()
         {
             var content = new StreamContent(new MemoryStream(MultipartPayloadBytes, writable: false));
