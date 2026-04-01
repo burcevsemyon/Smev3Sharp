@@ -1,9 +1,9 @@
 root = true
 
-# Analyzer configuration for this repository.
-
-[*.cs]
+[*]
 charset = utf-8
+# Analyzer configuration for this repository.
+[*.cs]
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = true
 # Library code should avoid capturing SynchronizationContext by default.

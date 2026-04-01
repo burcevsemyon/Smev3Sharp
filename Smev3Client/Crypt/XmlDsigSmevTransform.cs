@@ -23,12 +23,12 @@ namespace Smev3Client
 
         public override Type[] OutputTypes => _inputOutputTypes;
 
-        XmlDocument GetNodeDoc(XmlNode node)
+        static XmlDocument GetNodeDoc(XmlNode node)
         {
             return node.OwnerDocument ?? node as XmlDocument;
         }
 
-        void CloneAttributes(
+        static void CloneAttributes(
             XmlNode dstNode,
             XmlNode srcNode,
             Stack<(string prefix, string namespaceURI)?> namespacesStack,
@@ -71,7 +71,7 @@ namespace Smev3Client
             }
         }
 
-        void CloneNode(
+        static void CloneNode(
             XmlNode dstParentNode,
             XmlNode srcNode,
             Stack<(string prefix, string namespaceURI)?> namespacesStack,
