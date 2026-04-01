@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +10,8 @@ namespace Smev3Client
 {
     public class Smev3ClientResponse : IDisposable
     {
+        private bool _disposed;
+
         protected HttpResponseMessage _httpResponse;
 
         public Smev3ClientResponse(HttpResponseMessage response)
@@ -17,16 +19,13 @@ namespace Smev3Client
             _httpResponse = response ?? throw new ArgumentNullException(nameof(response));
         }
 
-        ~Smev3ClientResponse()
-        {
-            Dispose(false);
-        }
-
         /// <summary>
         /// Открепляет HTTP ответ. Далее нельзя вызывать никакие методы объекта кроме Dispose
         /// </summary>
         internal HttpResponseMessage DetachHttpResponse()
         {
+            ThrowIfDisposed();
+
             var response = _httpResponse;
 
             _httpResponse = null;
@@ -47,7 +46,7 @@ namespace Smev3Client
 
         /// <summary>
         /// Чтение ответа в строку
-        /// </summary>        
+        /// </summary>
         public Task<string> ReadSoapBodyAsStringAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
@@ -59,15 +58,14 @@ namespace Smev3Client
 
         public void Dispose()
         {
-            Dispose(true);
+            if (_disposed)
+            {
+                return;
+            }
 
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool _)
-        {
             _httpResponse?.Dispose();
             _httpResponse = null;
+            _disposed = true;
         }
 
         #endregion
@@ -76,7 +74,7 @@ namespace Smev3Client
 
         private void ThrowIfDisposed()
         {
-            if (_httpResponse == null)
+            if (_disposed)
             {
                 throw new ObjectDisposedException(nameof(Smev3ClientResponse));
             }

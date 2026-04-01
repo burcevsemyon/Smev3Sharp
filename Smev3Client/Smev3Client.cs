@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
@@ -16,8 +16,8 @@ namespace Smev3Client
     {
         #region members
 
+        private bool _disposed;
         private readonly HttpClient _httpClient;
-
         private readonly ISmev3XmlSigner _signer;
 
         #endregion
@@ -41,6 +41,8 @@ namespace Smev3Client
                                                                       CancellationToken cancellationToken)
             where TServiceRequest : new()
         {
+            ThrowIfDisposed();
+
             HttpResponseMessage httpResponse = null;
             try
             {
@@ -83,6 +85,8 @@ namespace Smev3Client
         public async Task<Smev3ClientResponse> GetResponseAsync(Uri namespaceUri, string rootElementLocalName,
                                                     CancellationToken cancellationToken)
         {
+            ThrowIfDisposed();
+
             var envelope = new GetResponseRequest(
                     requestData: new MessageTypeSelector(namespaceUri, rootElementLocalName)
                     {
@@ -106,6 +110,8 @@ namespace Smev3Client
                                                 CancellationToken cancellationToken)
             where TServiceResponse : new()
         {
+            ThrowIfDisposed();
+
             using var response = await GetResponseAsync(namespaceUri, rootElementLocalName, cancellationToken)
                                         .ConfigureAwait(false);
 
@@ -120,6 +126,8 @@ namespace Smev3Client
         /// </summary>
         public async Task<Smev3ClientResponse<AckResponse>> AckAsync(Guid messageId, CancellationToken cancellationToken)
         {
+            ThrowIfDisposed();
+
             var envelope = new AckRequest(
                     new AckTargetMessage
                     {
@@ -143,6 +151,7 @@ namespace Smev3Client
 
         public void Dispose()
         {
+            _disposed = true;
         }
 
         #endregion
@@ -154,6 +163,8 @@ namespace Smev3Client
         /// </summary>
         private async Task<HttpResponseMessage> SendAsync(byte[] envelopeBytes, CancellationToken cancellationToken)
         {
+            ThrowIfDisposed();
+
             if (envelopeBytes == null)
             {
                 throw new ArgumentNullException(nameof(envelopeBytes));
@@ -192,6 +203,14 @@ namespace Smev3Client
                 httpResponse?.Dispose();
 
                 throw;
+            }
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Smev3Client));
             }
         }
 

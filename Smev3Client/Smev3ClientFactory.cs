@@ -9,15 +9,12 @@ namespace Smev3Client
 {
     internal class Smev3ClientFactory : ISmev3ClientFactory
     {
+        private bool _disposed;
+
         private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly ConcurrentDictionary<string, (Smev3Client client, GostAsymmetricAlgorithm algorithm)> _clientsDic =
                                     new ConcurrentDictionary<string, (Smev3Client client, GostAsymmetricAlgorithm algorithm)>();
-
-        ~Smev3ClientFactory()
-        {
-            Dispose();
-        }
 
         private readonly IReadOnlyDictionary<string, SmevServiceConfig> _serviceConfigsByMnemonic;
 
@@ -49,6 +46,8 @@ namespace Smev3Client
 
         public ISmev3Client Get(string mnemonic)
         {
+            ThrowIfDisposed();
+
             if (string.IsNullOrWhiteSpace(mnemonic))
             {
                 throw new ArgumentException("Мнемоника сервиса не может быть пустой строкой");
@@ -83,6 +82,11 @@ namespace Smev3Client
 
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             foreach (var item in _clientsDic)
             {
                 item.Value.algorithm.Dispose();
@@ -90,7 +94,19 @@ namespace Smev3Client
 
             _clientsDic.Clear();
 
-            GC.SuppressFinalize(this);
+            _disposed = true;
+        }
+
+        #endregion
+
+        #region private
+
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(Smev3ClientFactory));
+            }
         }
 
         #endregion
