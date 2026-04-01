@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using System.Xml.Serialization;
@@ -25,20 +24,16 @@ namespace Smev3Client.Http
             XmlResolver = null
         };
         
-        private static readonly ConcurrentDictionary<Type, XmlSerializer> SerializersCache = new ConcurrentDictionary<Type, XmlSerializer>();
-        
         internal static async Task<T> ReadSoapBodyAsAsync<T>(
             this HttpContent httpContent, CancellationToken cancellationToken)
             where T : ISoapEnvelopeBody, new()
         {
             using var stream = await httpContent.ReadSoapBodyAsStreamAsync(cancellationToken)
                                                   .ConfigureAwait(false);
-            
-            var serializer = SerializersCache.GetOrAdd(typeof(SoapEnvelope<T>), type => new XmlSerializer(type));
 
             using var reader = XmlReader.Create(stream, XmlReaderSettings);
 
-            var envelope = (SoapEnvelope<T>)serializer.Deserialize(reader);
+            var envelope = (SoapEnvelope<T>)SerializerCache<T>.EnvelopeSerializer.Deserialize(reader);
 
             return envelope.Body;
         }
@@ -86,7 +81,7 @@ namespace Smev3Client.Http
                 await contentStream.DisposeAsync()
                                     .ConfigureAwait(false);
                 
-                return new MemoryStream(Array.Empty<byte>(), false);
+                return Stream.Null;
             }
             catch
             {
@@ -137,6 +132,12 @@ namespace Smev3Client.Http
             }
 
             return stream;
+        }
+
+        private static class SerializerCache<TBody>
+            where TBody : ISoapEnvelopeBody, new()
+        {
+            internal static readonly XmlSerializer EnvelopeSerializer = new XmlSerializer(typeof(SoapEnvelope<TBody>));
         }
     }
 }

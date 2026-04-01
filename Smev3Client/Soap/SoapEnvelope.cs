@@ -1,6 +1,4 @@
 using System.IO;
-using System;
-using System.Collections.Concurrent;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -14,7 +12,7 @@ namespace Smev3Client.Soap
     public class SoapEnvelope<TBody>
         where TBody : ISoapEnvelopeBody, new()
     {
-        private static readonly ConcurrentDictionary<Type, XmlSerializer> SerializersCache = new ConcurrentDictionary<Type, XmlSerializer>();
+        private static readonly XmlSerializer Serializer = new XmlSerializer(typeof(SoapEnvelope<TBody>));
         private static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings { Indent = false, Encoding = new UTF8Encoding(false) };
 
         public XmlSerializerNamespaces SerializerNamespaces { get; } = new XmlSerializerNamespaces();
@@ -42,9 +40,7 @@ namespace Smev3Client.Soap
 
             using var writer = XmlWriter.Create(stream, XmlWriterSettings);
 
-            var serializer = SerializersCache.GetOrAdd(GetType(), type => new XmlSerializer(type));
-
-            serializer.Serialize(writer, this, SerializerNamespaces);
+            Serializer.Serialize(writer, this, SerializerNamespaces);
 
             writer.Flush();
 

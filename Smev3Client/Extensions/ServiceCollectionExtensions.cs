@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Collections.Generic;
@@ -18,17 +18,27 @@ namespace Smev3Client.Extensions
 
         public static void AddSmev3Client(this IServiceCollection serviceCollection, Func<SmevConfig> configure = null)
         {
-            using var serviceProvider = serviceCollection.BuildServiceProvider();
+            serviceCollection.AddSingleton(sp =>
+            {
+                if (configure != null)
+                {
+                    return configure();
+                }
 
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                return GetConfigFromAppConfig(configuration);
+            });
 
-            var smevConfig = configure?.Invoke() ?? GetConfigFromAppConfig(configuration);
-
-            var httpClientBuilder = serviceCollection.AddHttpClient("SmevClient", (httpClient) => httpClient.BaseAddress = smevConfig.Url);
+            serviceCollection.AddHttpClient("SmevClient", (sp, httpClient) =>
+            {
+                var smevConfig = sp.GetRequiredService<SmevConfig>();
+                httpClient.BaseAddress = smevConfig.Url;
+            });
 
             serviceCollection.AddSingleton<ISmev3ClientFactory>((sp) =>
             {
                 var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+                var smevConfig = sp.GetRequiredService<SmevConfig>();
 
                 return new Smev3ClientFactory(httpClientFactory, smevConfig.ServiceConfigs);
             });
