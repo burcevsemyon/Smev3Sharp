@@ -1,15 +1,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Xml;
-using System.Xml.Serialization;
 using System.IO;
-using System.Text;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Xml;
+using System.Xml.Serialization;
 using Microsoft.AspNetCore.WebUtilities;
-
 using Smev3Client.Soap;
 
 namespace Smev3Client.Http
@@ -21,84 +19,97 @@ namespace Smev3Client.Http
             IgnoreWhitespace = true,
             IgnoreProcessingInstructions = true,
             DtdProcessing = DtdProcessing.Prohibit,
-            XmlResolver = null
+            XmlResolver = null,
         };
-        
+
         internal static async Task<T> ReadSoapBodyAsAsync<T>(
-            this HttpContent httpContent, CancellationToken cancellationToken)
+            this HttpContent httpContent,
+            CancellationToken cancellationToken
+        )
             where T : ISoapEnvelopeBody, new()
         {
-            using var stream = await httpContent.ReadSoapBodyAsStreamAsync(cancellationToken)
-                                                  .ConfigureAwait(false);
+            using var stream = await httpContent
+                .ReadSoapBodyAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             using var reader = XmlReader.Create(stream, XmlReaderSettings);
 
-            var envelope = (SoapEnvelope<T>)SerializerCache<T>.EnvelopeSerializer.Deserialize(reader);
+            var envelope =
+                (SoapEnvelope<T>)SerializerCache<T>.EnvelopeSerializer.Deserialize(reader);
 
             return envelope.Body;
         }
 
         internal static async Task<string> ReadSoapBodyAsStringAsync(
-            this HttpContent httpContent, CancellationToken cancellationToken)
+            this HttpContent httpContent,
+            CancellationToken cancellationToken
+        )
         {
             using var stream = await httpContent
-                                            .ReadSoapBodyAsStreamAsync(cancellationToken)
-                                                .ConfigureAwait(false);
-            using var streamReader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
+                .ReadSoapBodyAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
+            using var streamReader = new StreamReader(
+                stream,
+                Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: true
+            );
 
-            return await streamReader.ReadToEndAsync()
-                                        .ConfigureAwait(false);
+            return await streamReader.ReadToEndAsync().ConfigureAwait(false);
         }
 
         private static async Task<Stream> ReadSoapBodyAsStreamAsync(
-                    this HttpContent httpContent, CancellationToken cancellationToken)
+            this HttpContent httpContent,
+            CancellationToken cancellationToken
+        )
         {
             Stream contentStream = null;
             try
             {
-                contentStream = await httpContent
-                                    .ReadAsStreamAsync()
-                                    .ConfigureAwait(false);
-                
+                contentStream = await httpContent.ReadAsStreamAsync().ConfigureAwait(false);
+
                 contentStream.SeekToBeginIfPossible();
 
                 if (!httpContent.TryGetMultipartContentBoundary(out var boundary))
                 {
                     return contentStream;
                 }
-                
+
                 var multipartReader = new MultipartReader(boundary, contentStream);
 
                 var section = await multipartReader
-                                                .ReadNextSectionAsync(cancellationToken)
-                                                .ConfigureAwait(false);
+                    .ReadNextSectionAsync(cancellationToken)
+                    .ConfigureAwait(false);
                 if (section != null)
                 {
                     return section.Body.SeekToBeginIfPossible();
                 }
-                
-                await contentStream.DisposeAsync()
-                                    .ConfigureAwait(false);
-                
+
+                await contentStream.DisposeAsync().ConfigureAwait(false);
+
                 return Stream.Null;
             }
             catch
             {
                 if (contentStream != null)
                 {
-                    await contentStream.DisposeAsync()
-                                        .ConfigureAwait(false);
+                    await contentStream.DisposeAsync().ConfigureAwait(false);
                 }
                 throw;
             }
         }
 
-        private static bool TryGetMultipartContentBoundary(this HttpContent httpContent, [NotNullWhen(true)] out string? boundary)
+        private static bool TryGetMultipartContentBoundary(
+            this HttpContent httpContent,
+            [NotNullWhen(true)] out string? boundary
+        )
         {
             boundary = null;
 
             var contentType = httpContent.Headers.ContentType;
-            if (contentType?.MediaType?.StartsWith("multipart", StringComparison.OrdinalIgnoreCase) != true)
+            if (
+                contentType?.MediaType?.StartsWith("multipart", StringComparison.OrdinalIgnoreCase)
+                != true
+            )
             {
                 return false;
             }
@@ -113,9 +124,12 @@ namespace Smev3Client.Http
                 boundary = parameter.Value?.Trim(' ').Trim('"');
                 break;
             }
-            
-            return string.IsNullOrWhiteSpace(boundary) ? throw
-                new InvalidOperationException("Invalid multipart content: missing required 'boundary' parameter in Content-Type.") : true;
+
+            return string.IsNullOrWhiteSpace(boundary)
+                ? throw new InvalidOperationException(
+                    "Invalid multipart content: missing required 'boundary' parameter in Content-Type."
+                )
+                : true;
         }
 
         private static Stream SeekToBeginIfPossible(this Stream stream)
@@ -136,7 +150,9 @@ namespace Smev3Client.Http
         private static class SerializerCache<TBody>
             where TBody : ISoapEnvelopeBody, new()
         {
-            internal static readonly XmlSerializer EnvelopeSerializer = new XmlSerializer(typeof(SoapEnvelope<TBody>));
+            internal static readonly XmlSerializer EnvelopeSerializer = new XmlSerializer(
+                typeof(SoapEnvelope<TBody>)
+            );
         }
     }
 }

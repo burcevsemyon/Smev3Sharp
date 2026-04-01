@@ -17,6 +17,6 @@ namespace Smev3Client
         /// <summary>
         /// Вызывается перед отправкой пакета в СМЭВ
         /// </summary>
-        public Action<ReadOnlyMemory<byte>> OnBeforeSend { get; set; }
+        public Action<ReadOnlyMemory<byte>>? OnBeforeSend { get; set; }
     }
 }
