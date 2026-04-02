@@ -6,6 +6,4 @@ charset = utf-8
 [*.cs]
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = true
-# Library code should avoid capturing SynchronizationContext by default.
-dotnet_diagnostic.CA2007.severity = warning
 
