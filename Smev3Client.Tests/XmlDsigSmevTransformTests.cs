@@ -148,7 +148,6 @@ namespace Smev3Client.Tests
         public void GetOutput_WithXmlnsDeclarationAndPrefixedAttribute_DoesNotThrowAndPreservesAttributeNamespace()
         {
             var input = Parse("<root xmlns:a=\"urn:test:a\"><a:item a:id=\"42\"/></root>");
-
             var output = Transform(input);
 
             var item = output.DocumentElement?.FirstChild as XmlElement;
