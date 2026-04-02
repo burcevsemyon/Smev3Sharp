@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Cryptography;
-
 using CryptoApiLiteSharp;
 
 namespace Smev3Client.Crypt
@@ -15,9 +14,15 @@ namespace Smev3Client.Crypt
 
         static GostR3411_2012_256HashAlgorithm()
         {
-            if (!CApiLiteNative.CryptAcquireContext(
-               out _cspHandle, null, CApiLiteConsts.CP_GR3410_2012_PROV,
-               CApiLiteConsts.PROV_GOST_2012_256, CApiLiteConsts.CRYPT_VERIFYCONTEXT))
+            if (
+                !CApiLiteNative.CryptAcquireContext(
+                    out _cspHandle,
+                    null,
+                    CApiLiteConsts.CP_GR3410_2012_PROV,
+                    CApiLiteConsts.PROV_GOST_2012_256,
+                    CApiLiteConsts.CRYPT_VERIFYCONTEXT
+                )
+            )
             {
                 throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptAcquireContext));
             }
@@ -44,15 +49,21 @@ namespace Smev3Client.Crypt
             ResetHash();
         }
 
-        protected unsafe override void HashCore(byte[] array, int ibStart, int cbSize)
+        protected override unsafe void HashCore(byte[] array, int ibStart, int cbSize)
         {
             ThrowIfDisposed();
 
             if (_hashHandle == null || _hashHandle.IsClosed || _hashHandle.IsInvalid)
             {
-                if (!CApiLiteNative.CryptCreateHash(
-                    _cspHandle, CApiLiteConsts.CALG_GR3411_2012_256, IntPtr.Zero,
-                    0, out _hashHandle))
+                if (
+                    !CApiLiteNative.CryptCreateHash(
+                        _cspHandle,
+                        CApiLiteConsts.CALG_GR3411_2012_256,
+                        IntPtr.Zero,
+                        0,
+                        out _hashHandle
+                    )
+                )
                 {
                     throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptCreateHash));
                 }
@@ -72,17 +83,24 @@ namespace Smev3Client.Crypt
             }
         }
 
-        protected unsafe override byte[] HashFinal()
+        protected override unsafe byte[] HashFinal()
         {
             ThrowIfDisposed();
 
-            int dataLength = 32;
+            var dataLength = 32;
             var data = new byte[dataLength];
 
             fixed (void* ptr = data)
             {
-                if (!CApiLiteNative.CryptGetHashParam(
-                    _hashHandle, CApiLiteConsts.HP_HASHVAL, new IntPtr(ptr), ref dataLength, 0))
+                if (
+                    !CApiLiteNative.CryptGetHashParam(
+                        _hashHandle,
+                        CApiLiteConsts.HP_HASHVAL,
+                        new IntPtr(ptr),
+                        ref dataLength,
+                        0
+                    )
+                )
                 {
                     throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptGetHashParam));
                 }

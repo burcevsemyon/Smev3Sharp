@@ -2,7 +2,6 @@
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-
 using Smev3Client.Xml;
 
 namespace Smev3Client.Smev
@@ -38,37 +37,61 @@ namespace Smev3Client.Smev
         public void ReadXml(XmlReader reader)
         {
             reader.ReadElementSubtreeContent(
-                "MessageMetadata", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
-                (metaDataReader) =>
+                "MessageMetadata",
+                Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                required: true,
+                metaDataReader =>
                 {
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "MessageId", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,
-                        (r) => MessageId = Guid.Parse(r.ReadElementContentAsString()));
+                        "MessageId",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: false,
+                        r => MessageId = Guid.Parse(r.ReadElementContentAsString())
+                    );
 
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "MessageType", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
-                        (r) => MessageType = r.ReadElementContentAsString());
+                        "MessageType",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: true,
+                        r => MessageType = r.ReadElementContentAsString()
+                    );
 
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "Sender", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,
-                        (r) => r.Skip());
+                        "Sender",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: false,
+                        r => r.Skip()
+                    );
 
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "SendingTimestamp", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: true,
-                        (r) => SendingTimestamp = DateTime.Parse(r.ReadElementContentAsString()));
+                        "SendingTimestamp",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: true,
+                        r => SendingTimestamp = DateTime.Parse(r.ReadElementContentAsString())
+                    );
 
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "Recipient", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,
-                        (r) => r.Skip());
+                        "Recipient",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: false,
+                        r => r.Skip()
+                    );
 
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "DeliveryTimestamp", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,
-                        (r) => DeliveryTimestamp = DateTime.Parse(r.ReadElementContentAsString()));
+                        "DeliveryTimestamp",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: false,
+                        r => DeliveryTimestamp = DateTime.Parse(r.ReadElementContentAsString())
+                    );
 
                     metaDataReader.ReadElementIfItCurrentOrRequired(
-                        "Status", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2, required: false,
-                        (r) => Status = r.ReadElementContentAsString());
-                });
+                        "Status",
+                        Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_1_2,
+                        required: false,
+                        r => Status = r.ReadElementContentAsString()
+                    );
+                }
+            );
         }
 
         public void WriteXml(XmlWriter writer)

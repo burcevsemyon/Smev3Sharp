@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-
+using System.Text;
 using CryptoApiLiteSharp;
 
 namespace Smev3Client.Crypt
@@ -23,8 +22,14 @@ namespace Smev3Client.Crypt
         static GostAsymmetricAlgorithm()
         {
             CryptoConfig.AddAlgorithm(typeof(GostAsymmetricAlgorithm), "Smev3Signature");
-            CryptoConfig.AddAlgorithm(typeof(GostSignatureDescription), XmlDsigConsts.XmlDsigGost3410_2012_256Url);
-            CryptoConfig.AddAlgorithm(typeof(GostR3411_2012_256HashAlgorithm), XmlDsigConsts.XmlDsigGost3411_2012_256Url);
+            CryptoConfig.AddAlgorithm(
+                typeof(GostSignatureDescription),
+                XmlDsigConsts.XmlDsigGost3410_2012_256Url
+            );
+            CryptoConfig.AddAlgorithm(
+                typeof(GostR3411_2012_256HashAlgorithm),
+                XmlDsigConsts.XmlDsigGost3411_2012_256Url
+            );
         }
 
         protected GostAsymmetricAlgorithm()
@@ -44,7 +49,7 @@ namespace Smev3Client.Crypt
         private static readonly object _lock = new object();
 
         public unsafe GostAsymmetricAlgorithm(string pfxPath, string pfxPassword, string thumbPrint)
-         : this()
+            : this()
         {
             if (string.IsNullOrWhiteSpace(thumbPrint))
             {
@@ -60,7 +65,7 @@ namespace Smev3Client.Crypt
                     var pfxDataBlob = new CRYPT_DATA_BLOB
                     {
                         cbData = pfxData.Length,
-                        pbData = new IntPtr(ptr)
+                        pbData = new IntPtr(ptr),
                     };
 
                     var passwordBytes = Encoding.UTF32.GetBytes(pfxPassword ?? string.Empty);
@@ -68,13 +73,19 @@ namespace Smev3Client.Crypt
                     {
                         lock (_lock)
                         {
-                            _storeHandle = CApiLiteNative.PFXImportCertStore(ref pfxDataBlob, new IntPtr(ptrPassword),
-                                CApiLiteConsts.CRYPT_MACHINE_KEYSET | CApiLiteConsts.PKCS12_IMPORT_SILENT);
+                            _storeHandle = CApiLiteNative.PFXImportCertStore(
+                                ref pfxDataBlob,
+                                new IntPtr(ptrPassword),
+                                CApiLiteConsts.CRYPT_MACHINE_KEYSET
+                                    | CApiLiteConsts.PKCS12_IMPORT_SILENT
+                            );
                         }
 
                         if (_storeHandle.IsInvalid)
                         {
-                            throw new CApiLiteLastErrorException(nameof(CApiLiteNative.PFXImportCertStore));
+                            throw new CApiLiteLastErrorException(
+                                nameof(CApiLiteNative.PFXImportCertStore)
+                            );
                         }
                     }
                 }
@@ -86,24 +97,40 @@ namespace Smev3Client.Crypt
                     var thumbPrintDataBlob = new CRYPT_DATA_BLOB
                     {
                         cbData = thumbPrintData.Length,
-                        pbData = new IntPtr(ptr)
+                        pbData = new IntPtr(ptr),
                     };
 
                     _certHandle = CApiLiteNative.CertFindCertificateInStore(
-                        _storeHandle, CApiLiteConsts.PKCS_7_OR_X509_ASN_ENCODING, 0,
-                        CApiLiteConsts.CERT_FIND_SHA1_HASH, new IntPtr(&thumbPrintDataBlob), IntPtr.Zero);
+                        _storeHandle,
+                        CApiLiteConsts.PKCS_7_OR_X509_ASN_ENCODING,
+                        0,
+                        CApiLiteConsts.CERT_FIND_SHA1_HASH,
+                        new IntPtr(&thumbPrintDataBlob),
+                        IntPtr.Zero
+                    );
                     if (_certHandle.IsInvalid)
                     {
-                        throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CertFindCertificateInStore));
+                        throw new CApiLiteLastErrorException(
+                            nameof(CApiLiteNative.CertFindCertificateInStore)
+                        );
                     }
                 }
 
-                bool callerFreeProvider = false;
-                if (!CApiLiteNative.CryptAcquireCertificatePrivateKey(
-                    _certHandle, CApiLiteConsts.CRYPT_ACQUIRE_USE_PROV_INFO_FLAG,
-                    IntPtr.Zero, out _cspHandle, ref _keySpec, ref callerFreeProvider))
+                var callerFreeProvider = false;
+                if (
+                    !CApiLiteNative.CryptAcquireCertificatePrivateKey(
+                        _certHandle,
+                        CApiLiteConsts.CRYPT_ACQUIRE_USE_PROV_INFO_FLAG,
+                        IntPtr.Zero,
+                        out _cspHandle,
+                        ref _keySpec,
+                        ref callerFreeProvider
+                    )
+                )
                 {
-                    throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptAcquireCertificatePrivateKey));
+                    throw new CApiLiteLastErrorException(
+                        nameof(CApiLiteNative.CryptAcquireCertificatePrivateKey)
+                    );
                 }
             }
             catch
@@ -120,34 +147,62 @@ namespace Smev3Client.Crypt
         {
             if (hashData == null || hashData.Length == 0)
             {
-                throw new ArgumentException($"Параметр {nameof(hashData)} должен быть не пустым массивом.");
+                throw new ArgumentException(
+                    $"Параметр {nameof(hashData)} должен быть не пустым массивом."
+                );
             }
 
             HashSafeHandle hashHandle = null;
             try
             {
-                if (!CApiLiteNative.CryptCreateHash(
-                    _cspHandle, CApiLiteConsts.CALG_GR3411_2012_256, IntPtr.Zero,
-                    0, out hashHandle))
+                if (
+                    !CApiLiteNative.CryptCreateHash(
+                        _cspHandle,
+                        CApiLiteConsts.CALG_GR3411_2012_256,
+                        IntPtr.Zero,
+                        0,
+                        out hashHandle
+                    )
+                )
                 {
                     throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptCreateHash));
                 }
 
                 fixed (void* ptrHashData = hashData)
                 {
-                    if (!CApiLiteNative.CryptSetHashParam(hashHandle, CApiLiteConsts.HP_HASHVAL, new IntPtr(ptrHashData), 0))
+                    if (
+                        !CApiLiteNative.CryptSetHashParam(
+                            hashHandle,
+                            CApiLiteConsts.HP_HASHVAL,
+                            new IntPtr(ptrHashData),
+                            0
+                        )
+                    )
                     {
-                        throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptSetHashParam));
+                        throw new CApiLiteLastErrorException(
+                            nameof(CApiLiteNative.CryptSetHashParam)
+                        );
                     }
 
                     var signData = new byte[SIGN_BUFF_SIZE];
-                    int signDataLen = signData.Length;
+                    var signDataLen = signData.Length;
 
                     fixed (byte* ptrSignData = signData)
                     {
-                        if (!CApiLiteNative.CryptSignHash(hashHandle, _keySpec, IntPtr.Zero, 0, new IntPtr(ptrSignData), ref signDataLen))
+                        if (
+                            !CApiLiteNative.CryptSignHash(
+                                hashHandle,
+                                _keySpec,
+                                IntPtr.Zero,
+                                0,
+                                new IntPtr(ptrSignData),
+                                ref signDataLen
+                            )
+                        )
                         {
-                            throw new CApiLiteLastErrorException(nameof(CApiLiteNative.CryptSignHash));
+                            throw new CApiLiteLastErrorException(
+                                nameof(CApiLiteNative.CryptSignHash)
+                            );
                         }
                     }
 
@@ -185,14 +240,19 @@ namespace Smev3Client.Crypt
             }
 
             var certContext = Marshal.PtrToStructure<CERT_CONTEXT>(
-                                                    _certHandle.DangerousGetHandle());
+                _certHandle.DangerousGetHandle()
+            );
 
             var certEncoded = new byte[certContext.cbCertEncoded];
 
             fixed (void* ptr = certEncoded)
             {
-                Buffer.MemoryCopy(certContext.pbCertEncoded.ToPointer(), ptr,
-                    certEncoded.Length, certContext.cbCertEncoded);
+                Buffer.MemoryCopy(
+                    certContext.pbCertEncoded.ToPointer(),
+                    ptr,
+                    certEncoded.Length,
+                    certContext.cbCertEncoded
+                );
             }
 
             return certEncoded;
@@ -200,11 +260,11 @@ namespace Smev3Client.Crypt
 
         private static byte[] DecodeHexString(string s)
         {
-            string hexString = s.Replace(" ", "");
-            uint cbHex = (uint)hexString.Length / 2;
-            byte[] hex = new byte[cbHex];
-            int i = 0;
-            for (int index = 0; index < cbHex; index++)
+            var hexString = s.Replace(" ", "");
+            var cbHex = (uint)hexString.Length / 2;
+            var hex = new byte[cbHex];
+            var i = 0;
+            for (var index = 0; index < cbHex; index++)
             {
                 hex[index] = (byte)((HexToByte(hexString[i]) << 4) | HexToByte(hexString[i + 1]));
                 i += 2;

@@ -2,13 +2,12 @@
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-
 using Smev3Client.Xml;
 
 namespace Smev3Client.Smev
 {
-    public class MessagePrimaryContent<T> :
-        IXmlSerializable where T : new()
+    public class MessagePrimaryContent<T> : IXmlSerializable
+        where T : new()
     {
         public MessagePrimaryContent() { }
 
@@ -29,8 +28,10 @@ namespace Smev3Client.Smev
         public void ReadXml(XmlReader reader)
         {
             reader.ReadElementSubtreeContent(
-                "MessagePrimaryContent", Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2, required: true,
-                (contentReader) =>
+                "MessagePrimaryContent",
+                Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2,
+                required: true,
+                contentReader =>
                 {
                     if (typeof(T) == typeof(MessagePrimaryContentXml))
                     {
@@ -46,16 +47,18 @@ namespace Smev3Client.Smev
 
                         Content = (T)serializer.Deserialize(contentReader);
                     }
-                });
+                }
+            );
         }
 
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteStartElement("MessagePrimaryContent",
-                Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2);
+            writer.WriteStartElement(
+                "MessagePrimaryContent",
+                Smev3NameSpaces.MESSAGE_EXCHANGE_TYPES_BASIC_1_2
+            );
 
-            Smev3XmlSerializer.ToXmlElement(Content)
-                .WriteTo(writer);
+            Smev3XmlSerializer.ToXmlElement(Content).WriteTo(writer);
 
             writer.WriteEndElement();
         }

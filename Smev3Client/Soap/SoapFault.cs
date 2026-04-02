@@ -19,22 +19,40 @@ namespace Smev3Client.Soap
 
         public void ReadXml(XmlReader reader)
         {
-            reader.ReadElementSubtreeContent("Body", SoapConsts.SOAP_NAMESPACE, required: true,
-            (bodyReader) =>
-            {
-                bodyReader.ReadElementSubtreeContent("Fault", SoapConsts.SOAP_NAMESPACE, required: true,
-                (faultReader) =>
+            reader.ReadElementSubtreeContent(
+                "Body",
+                SoapConsts.SOAP_NAMESPACE,
+                required: true,
+                bodyReader =>
                 {
-                    FaultCode = faultReader.ReadElementContentAsString("faultcode", string.Empty);
-                    FaultString = faultReader.ReadElementContentAsString("faultstring", string.Empty);
+                    bodyReader.ReadElementSubtreeContent(
+                        "Fault",
+                        SoapConsts.SOAP_NAMESPACE,
+                        required: true,
+                        faultReader =>
+                        {
+                            FaultCode = faultReader.ReadElementContentAsString(
+                                "faultcode",
+                                string.Empty
+                            );
+                            FaultString = faultReader.ReadElementContentAsString(
+                                "faultstring",
+                                string.Empty
+                            );
 
-                    faultReader.ReadElementIfItCurrentOrRequired("detail", string.Empty, required: false,
-                    (detailReader) =>
-                    {
-                        DetailXmlFragment = detailReader.ReadOuterXml();
-                    });
-                });
-            });
+                            faultReader.ReadElementIfItCurrentOrRequired(
+                                "detail",
+                                string.Empty,
+                                required: false,
+                                detailReader =>
+                                {
+                                    DetailXmlFragment = detailReader.ReadOuterXml();
+                                }
+                            );
+                        }
+                    );
+                }
+            );
         }
 
         public void WriteXml(XmlWriter writer)

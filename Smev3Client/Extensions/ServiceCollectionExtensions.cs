@@ -1,8 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Collections.Generic;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +15,10 @@ namespace Smev3Client.Extensions
             AddSmev3Client(serviceCollection);
         }
 
-        public static void AddSmev3Client(this IServiceCollection serviceCollection, Func<SmevConfig> configure = null)
+        public static void AddSmev3Client(
+            this IServiceCollection serviceCollection,
+            Func<SmevConfig> configure = null
+        )
         {
             serviceCollection.AddSingleton(sp =>
             {
@@ -29,13 +31,16 @@ namespace Smev3Client.Extensions
                 return GetConfigFromAppConfig(configuration);
             });
 
-            serviceCollection.AddHttpClient("SmevClient", (sp, httpClient) =>
-            {
-                var smevConfig = sp.GetRequiredService<SmevConfig>();
-                httpClient.BaseAddress = smevConfig.Url;
-            });
+            serviceCollection.AddHttpClient(
+                "SmevClient",
+                (sp, httpClient) =>
+                {
+                    var smevConfig = sp.GetRequiredService<SmevConfig>();
+                    httpClient.BaseAddress = smevConfig.Url;
+                }
+            );
 
-            serviceCollection.AddSingleton<ISmev3ClientFactory>((sp) =>
+            serviceCollection.AddSingleton<ISmev3ClientFactory>(sp =>
             {
                 var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
                 var smevConfig = sp.GetRequiredService<SmevConfig>();
@@ -49,16 +54,17 @@ namespace Smev3Client.Extensions
             return new SmevConfig
             {
                 Url = new Uri(config["Smev:Url"]),
-                ServiceConfigs = config.GetSection("Smev:Services")
-                                       .Get<Dictionary<string, SmevServiceConfig>>()
-                                       .Select(i => new SmevServiceConfig
-                                       {
-                                           Mnemonic = i.Key,
-                                           Container = i.Value.Container,
-                                           Password = i.Value.Password,
-                                           Thumbprint = i.Value.Thumbprint
-                                       })
-                                       .ToList()
+                ServiceConfigs = config
+                    .GetSection("Smev:Services")
+                    .Get<Dictionary<string, SmevServiceConfig>>()
+                    .Select(i => new SmevServiceConfig
+                    {
+                        Mnemonic = i.Key,
+                        Container = i.Value.Container,
+                        Password = i.Value.Password,
+                        Thumbprint = i.Value.Thumbprint,
+                    })
+                    .ToList(),
             };
         }
     }
