@@ -57,8 +57,8 @@ namespace Smev3Client.Tests
             var input = Parse("<root>hello</root>");
             var output = Transform(input);
 
-            Assert.AreEqual("root", output.DocumentElement.LocalName);
-            Assert.AreEqual("hello", output.DocumentElement.InnerText);
+            Assert.AreEqual("root", output.DocumentElement?.LocalName);
+            Assert.AreEqual("hello", output.DocumentElement?.InnerText);
         }
 
         [TestMethod]
@@ -78,7 +78,7 @@ namespace Smev3Client.Tests
             var output = Transform(input);
 
             var a = output.DocumentElement;
-            var b = a.FirstChild as XmlElement;
+            var b = a?.FirstChild as XmlElement;
 
             Assert.IsNotNull(b);
             Assert.AreEqual(u, a.NamespaceURI);
@@ -94,7 +94,7 @@ namespace Smev3Client.Tests
             var output = Transform(input);
 
             var root = output.DocumentElement;
-            var a = root.FirstChild as XmlElement;
+            var a = root?.FirstChild as XmlElement;
             var b = a?.NextSibling as XmlElement;
 
             Assert.IsNotNull(a);
@@ -115,7 +115,7 @@ namespace Smev3Client.Tests
             var output = Transform(input);
 
             var root = output.DocumentElement;
-            var a = root.FirstChild as XmlElement;
+            var a = root?.FirstChild as XmlElement;
             var b = a?.NextSibling as XmlElement;
 
             Assert.IsNotNull(a);
@@ -142,7 +142,7 @@ namespace Smev3Client.Tests
             var input = Parse("<root>  t  </root>", preserveWhitespace: true);
             var output = Transform(input);
 
-            Assert.AreEqual("  t  ", output.DocumentElement.InnerText);
+            Assert.AreEqual("  t  ", output.DocumentElement?.InnerText);
         }
 
         [TestMethod]
