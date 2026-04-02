@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
-namespace Smev3Client.Crypt
+namespace Smev3Client.Benchmarks
 {
-    internal class XmlDsigSmevTransform : Transform
+    internal class GlobalMapXmlDsigSmevTransform : Transform
     {
         private static readonly Type[] InputOutputTypes = { typeof(XmlDocument) };
         private XmlDocument? _inputDocument;
 
         public const string ALGORITHM = "urn://smev-gov-ru/xmldsig/transform";
 
-        public XmlDsigSmevTransform()
+        public GlobalMapXmlDsigSmevTransform()
         {
             Algorithm = ALGORITHM;
         }
@@ -20,99 +20,81 @@ namespace Smev3Client.Crypt
         public override Type[] InputTypes => InputOutputTypes;
         public override Type[] OutputTypes => InputOutputTypes;
 
-        private static XmlDocument GetNodeDoc(XmlNode node)
-        {
-            return node.OwnerDocument ?? (XmlDocument)node;
-        }
-
         private static void CloneAttributes(
+            XmlDocument dstDocument,
             XmlNode dstNode,
             XmlNode srcNode,
-            Stack<(string prefix, string namespaceUri)> namespacesStack,
+            Dictionary<string, string> namespaceToPrefix,
             ref int nsIdx
         )
         {
-            if (
-                srcNode.Attributes == null
-                || srcNode.Attributes.Count == 0
-                || dstNode.Attributes == null
-            )
+            var srcAttributes = srcNode.Attributes;
+            var dstAttributes = dstNode.Attributes;
+            if (srcAttributes == null || srcAttributes.Count == 0 || dstAttributes == null)
             {
                 return;
             }
 
-            var dstDocument = GetNodeDoc(dstNode);
-            for (var i = 0; i < srcNode.Attributes.Count; i++)
+            for (var i = 0; i < srcAttributes.Count; i++)
             {
-                var srcAttr = srcNode.Attributes[i];
+                var srcAttr = srcAttributes[i]!;
                 var prefix = srcAttr.Prefix;
                 var localName = srcAttr.LocalName;
                 var namespaceUri = srcAttr.NamespaceURI;
 
-                if (
-                    srcAttr.Prefix == "xmlns"
-                    || (srcAttr.Prefix.Length == 0 && localName == "xmlns")
-                )
+                if (srcAttr.Prefix == "xmlns" || (srcAttr.Prefix.Length == 0 && localName == "xmlns"))
                 {
                     prefix = "xmlns";
-                    localName = GetOrAddPrefixForUri(namespacesStack, srcAttr.Value, ref nsIdx);
+                    localName = GetOrAddPrefixForUri(namespaceToPrefix, srcAttr.Value, ref nsIdx);
                 }
 
                 var newAttr = dstDocument.CreateAttribute(prefix, localName, namespaceUri);
                 newAttr.Value = srcAttr.Value;
-                dstNode.Attributes.Append(newAttr);
+                dstAttributes.Append(newAttr);
             }
         }
 
         private static string GetOrAddPrefixForUri(
-            Stack<(string prefix, string namespaceUri)> stack,
+            Dictionary<string, string> namespaceToPrefix,
             string uri,
             ref int nsIdx
         )
         {
-            foreach (var ns in stack)
+            if (namespaceToPrefix.TryGetValue(uri, out var prefix))
             {
-                if (ns.namespaceUri == uri)
-                {
-                    return ns.prefix;
-                }
+                return prefix;
             }
 
-            var res = (prefix: $"ns{++nsIdx}", namespaceUri: uri);
-            stack.Push(res);
-            return res.prefix;
+            var newPrefix = $"ns{++nsIdx}";
+            namespaceToPrefix[uri] = newPrefix;
+            return newPrefix;
         }
 
         private static void CloneNode(
+            XmlDocument dstDocument,
             XmlNode dstParentNode,
             XmlNode srcNode,
-            Stack<(string prefix, string namespaceUri)> namespaces,
+            Dictionary<string, string> namespaceToPrefix,
             ref int nsIdx
         )
         {
-            if (
-                srcNode.NodeType == XmlNodeType.XmlDeclaration
-                || srcNode.NodeType == XmlNodeType.ProcessingInstruction
-                || srcNode.NodeType == XmlNodeType.Whitespace
-                || srcNode.NodeType == XmlNodeType.Attribute
-            )
+            switch (srcNode.NodeType)
             {
-                return;
+                case XmlNodeType.XmlDeclaration:
+                case XmlNodeType.ProcessingInstruction:
+                case XmlNodeType.Whitespace:
+                case XmlNodeType.Attribute:
+                    return;
             }
 
-            var popNs = false;
             var prefix = string.Empty;
             var nsUri = string.Empty;
-
             if (srcNode.NodeType == XmlNodeType.Element)
             {
-                var nsIdxOld = nsIdx;
-                prefix = GetOrAddPrefixForUri(namespaces, srcNode.NamespaceURI, ref nsIdx);
+                prefix = GetOrAddPrefixForUri(namespaceToPrefix, srcNode.NamespaceURI, ref nsIdx);
                 nsUri = srcNode.NamespaceURI;
-                popNs = nsIdx > nsIdxOld;
             }
 
-            var dstDocument = GetNodeDoc(dstParentNode);
             var newNode = dstDocument.CreateNode(
                 srcNode.NodeType,
                 prefix: prefix,
@@ -120,7 +102,7 @@ namespace Smev3Client.Crypt
                 namespaceURI: nsUri
             );
 
-            CloneAttributes(newNode, srcNode, namespaces, ref nsIdx);
+            CloneAttributes(dstDocument, newNode, srcNode, namespaceToPrefix, ref nsIdx);
 
             if (srcNode.NodeType != XmlNodeType.Element)
             {
@@ -129,14 +111,10 @@ namespace Smev3Client.Crypt
 
             dstParentNode.AppendChild(newNode);
 
-            for (var i = 0; i < srcNode.ChildNodes.Count; i++)
+            var childNodes = srcNode.ChildNodes;
+            for (var i = 0; i < childNodes.Count; i++)
             {
-                CloneNode(newNode, srcNode.ChildNodes[i], namespaces, ref nsIdx);
-            }
-
-            if (popNs)
-            {
-                namespaces.Pop();
+                CloneNode(dstDocument, newNode, childNodes[i]!, namespaceToPrefix, ref nsIdx);
             }
         }
 
@@ -148,12 +126,13 @@ namespace Smev3Client.Crypt
             }
 
             var nsIdx = 0;
-            var namespaces = new Stack<(string prefix, string namespaceUri)>();
+            var namespaceToPrefix = new Dictionary<string, string>(StringComparer.Ordinal);
             var outDocument = new XmlDocument { PreserveWhitespace = true };
 
-            for (var i = 0; i < _inputDocument.ChildNodes.Count; i++)
+            var childNodes = _inputDocument.ChildNodes;
+            for (var i = 0; i < childNodes.Count; i++)
             {
-                CloneNode(outDocument, _inputDocument.ChildNodes[i], namespaces, ref nsIdx);
+                CloneNode(outDocument, outDocument, childNodes[i]!, namespaceToPrefix, ref nsIdx);
             }
 
             return outDocument;

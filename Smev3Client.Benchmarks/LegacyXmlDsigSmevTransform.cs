@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
-namespace Smev3Client.Crypt
+namespace Smev3Client.Benchmarks
 {
-    internal class XmlDsigSmevTransform : Transform
+    internal class LegacyXmlDsigSmevTransform : Transform
     {
         private static readonly Type[] InputOutputTypes = { typeof(XmlDocument) };
         private XmlDocument? _inputDocument;
 
         public const string ALGORITHM = "urn://smev-gov-ru/xmldsig/transform";
 
-        public XmlDsigSmevTransform()
+        public LegacyXmlDsigSmevTransform()
         {
             Algorithm = ALGORITHM;
         }
@@ -45,17 +45,14 @@ namespace Smev3Client.Crypt
             for (var i = 0; i < srcNode.Attributes.Count; i++)
             {
                 var srcAttr = srcNode.Attributes[i];
-                var prefix = srcAttr.Prefix;
+                var prefix = string.Empty;
                 var localName = srcAttr.LocalName;
                 var namespaceUri = srcAttr.NamespaceURI;
 
-                if (
-                    srcAttr.Prefix == "xmlns"
-                    || (srcAttr.Prefix.Length == 0 && localName == "xmlns")
-                )
+                if (localName == "xmlns")
                 {
                     prefix = "xmlns";
-                    localName = GetOrAddPrefixForUri(namespacesStack, srcAttr.Value, ref nsIdx);
+                    localName = GetOrAddPrefixForUri(namespacesStack, srcNode.NamespaceURI, ref nsIdx);
                 }
 
                 var newAttr = dstDocument.CreateAttribute(prefix, localName, namespaceUri);
@@ -131,7 +128,7 @@ namespace Smev3Client.Crypt
 
             for (var i = 0; i < srcNode.ChildNodes.Count; i++)
             {
-                CloneNode(newNode, srcNode.ChildNodes[i], namespaces, ref nsIdx);
+                CloneNode(newNode, srcNode.ChildNodes[i]!, namespaces, ref nsIdx);
             }
 
             if (popNs)
@@ -153,7 +150,7 @@ namespace Smev3Client.Crypt
 
             for (var i = 0; i < _inputDocument.ChildNodes.Count; i++)
             {
-                CloneNode(outDocument, _inputDocument.ChildNodes[i], namespaces, ref nsIdx);
+                CloneNode(outDocument, _inputDocument.ChildNodes[i]!, namespaces, ref nsIdx);
             }
 
             return outDocument;

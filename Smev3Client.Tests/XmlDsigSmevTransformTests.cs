@@ -1,7 +1,6 @@
 using System;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Smev3Client;
 using Smev3Client.Crypt;
 
 namespace Smev3Client.Tests
@@ -143,6 +142,23 @@ namespace Smev3Client.Tests
             var output = Transform(input);
 
             Assert.AreEqual("  t  ", output.DocumentElement?.InnerText);
+        }
+
+        [TestMethod]
+        public void GetOutput_WithXmlnsDeclarationAndPrefixedAttribute_DoesNotThrowAndPreservesAttributeNamespace()
+        {
+            var input = Parse("<root xmlns:a=\"urn:test:a\"><a:item a:id=\"42\"/></root>");
+
+            var output = Transform(input);
+
+            var item = output.DocumentElement?.FirstChild as XmlElement;
+            Assert.IsNotNull(item);
+
+            Assert.AreEqual("urn:test:a", item.NamespaceURI);
+
+            var namespacedAttr = item.Attributes?["id", "urn:test:a"];
+            Assert.IsNotNull(namespacedAttr);
+            Assert.AreEqual("42", namespacedAttr.Value);
         }
 
         [TestMethod]

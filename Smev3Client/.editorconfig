@@ -1,0 +1,4 @@
+[*.cs]
+# Library code should avoid capturing SynchronizationContext by default.
+dotnet_diagnostic.CA2007.severity = error
+
