@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Smev3Client.Crypt;
@@ -175,6 +177,203 @@ namespace Smev3Client.Tests
             var t = new XmlDsigSmevTransform();
 
             Assert.ThrowsException<NotImplementedException>(() => t.LoadInnerXml(null));
+        }
+
+        /// <summary>
+        /// Шаг 1 СМЭВ: инструкции обработки не попадают в результат (декларация XML уже не клонируется в CloneNode).
+        /// </summary>
+        [TestMethod]
+        public void GetOutput_RemovesProcessingInstructions()
+        {
+            var input = Parse("<?xml version=\"1.0\" encoding=\"utf-8\"?><root><?pi-test data?></root>");
+            var output = Transform(input);
+
+            var anyPi = output
+                .SelectNodes("//processing-instruction()")
+                ?.Cast<XmlNode>()
+                .Any();
+            Assert.IsFalse(anyPi ?? false);
+            Assert.AreEqual("root", output.DocumentElement?.LocalName);
+        }
+
+        // --- Ниже: ожидаемое поведение по спецификации СМЭВ 3.x (см. smev-transform.md).
+        // Текущий XmlDsigSmevTransform эти шаги не выполняет — снять [Ignore] при реализации.
+
+        [TestMethod]
+        [Ignore("СМЭВ шаг 2: удаление текстовых узлов, состоящих только из пробельных символов (≤ U+0020).")]
+        public void GetOutput_Step2_RemovesWhitespaceOnlyTextBetweenElements()
+        {
+            var input = Parse("<root>\n\t <inner xmlns=\"http://x\" />\n </root>");
+            var output = Transform(input);
+
+            var root = output.DocumentElement;
+            Assert.IsNotNull(root);
+            Assert.AreEqual(1, root.ChildNodes.Count);
+            Assert.AreEqual(XmlNodeType.Element, root.FirstChild?.NodeType);
+        }
+
+        [TestMethod]
+        [Ignore("СМЭВ шаг 3: пустой элемент после канонизации — пара тегов <tag></tag>, не самозакрывающаяся форма.")]
+        public void GetOutput_Step3_EmptyElementBecomesExplicitOpenClosePair()
+        {
+            var input = Parse("<root xmlns=\"http://x\"><leaf xmlns=\"http://x\"/></root>");
+            var output = Transform(input);
+
+            var leaf = output.DocumentElement?.FirstChild as XmlElement;
+            Assert.IsNotNull(leaf);
+            Assert.IsFalse(leaf.IsEmpty, "По спецификации СМЭВ пустой тег должен стать парой открывающий/закрывающий.");
+        }
+
+        [TestMethod]
+        [Ignore("СМЭВ шаг 4: неиспользуемые объявления xmlns на элементе удаляются.")]
+        public void GetOutput_Step4_RemovesUnusedNamespaceDeclarations()
+        {
+            const string u = "http://test/1";
+            const string unused = "http://unused";
+            var input = Parse(
+                $"<elementOne xmlns=\"{u}\" xmlns:qwe=\"{unused}\"><child xmlns=\"{u}\"/></elementOne>"
+            );
+            var output = Transform(input);
+
+            var root = output.DocumentElement;
+            Assert.IsNotNull(root);
+            CollectionAssert.DoesNotContain(
+                AttributeNames(root).ToList(),
+                "xmlns:qwe",
+                "Префикс qwe нигде не используется — объявление должно быть удалено."
+            );
+        }
+
+        [TestMethod]
+        [Ignore("СМЭВ шаг 7: атрибуты без префикса сортируются по локальному имени (attA перед attB).")]
+        public void GetOutput_Step7_UnprefixedAttributesSortedLexicographically()
+        {
+            const string u = "http://test/1";
+            var input = Parse(
+                $"<elementOne xmlns=\"{u}\"><elementTwo xmlns=\"{u}\" attB=\"bbb\" attA=\"aaa\"/></elementOne>"
+            );
+            var output = Transform(input);
+
+            var two = output.DocumentElement?.FirstChild as XmlElement;
+            Assert.IsNotNull(two);
+            var names = NonNamespaceAttributeLocalNames(two);
+            CollectionAssert.AreEqual(new[] { "attA", "attB" }, names);
+        }
+
+        [TestMethod]
+        [Ignore("СМЭВ шаг 8: объявления xmlns располагаются перед обычными атрибутами (после сортировки).")]
+        public void GetOutput_Step8_XmlnsDeclarationsBeforeRegularAttributes()
+        {
+            const string u = "http://test/1";
+            var input = Parse(
+                $"<elementOne xmlns=\"{u}\"><elementTwo xmlns=\"{u}\" z=\"last\" attA=\"a\"/></elementOne>"
+            );
+            var output = Transform(input);
+
+            var two = output.DocumentElement?.FirstChild as XmlElement;
+            Assert.IsNotNull(two);
+            var ordered = AttributeOrderForSpecCheck(two);
+            var seenNonXmlns = false;
+            foreach (var name in ordered)
+            {
+                var isXmlns = name.StartsWith("xmlns", StringComparison.Ordinal);
+                Assert.IsFalse(
+                    isXmlns && seenNonXmlns,
+                    "Объявления xmlns должны идти в начале элемента, перед обычными атрибутами."
+                );
+                if (!isXmlns)
+                {
+                    seenNonXmlns = true;
+                }
+            }
+        }
+
+        [TestMethod]
+        [Ignore("СМЭВ шаг 9.1: CDATA заменяется извлечённым текстом (секция не сохраняется).")]
+        public void GetOutput_Step9_CDataSectionIsUnwrappedToText()
+        {
+            var input = Parse("<root><![CDATA[<not-a-tag>]]></root>");
+            var output = Transform(input);
+
+            var root = output.DocumentElement;
+            Assert.IsNotNull(root);
+            Assert.AreEqual(1, root.ChildNodes.Count);
+            Assert.AreEqual(XmlNodeType.Text, root.FirstChild?.NodeType);
+            Assert.AreEqual("<not-a-tag>", root.FirstChild?.Value);
+        }
+
+        [TestMethod]
+        [Ignore("СМЭВ: полный пример из smev-transform.md (префиксы, сортировка атрибутов, пустой элемент как пара тегов).")]
+        public void GetOutput_MatchesSmevTransformDocSample()
+        {
+            var input = Parse(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                    + "<elementOne xmlns=\"http://test/1\" xmlns:qwe=\"http://test/2\">\n"
+                    + "    <qwe:elementTwo attB=\"bbb\" attA=\"aaa\"/>\n"
+                    + "</elementOne>"
+            );
+            var output = Transform(input);
+
+            const string expected =
+                "<ns1:elementOne xmlns:ns1=\"http://test/1\">"
+                    + "<ns2:elementTwo xmlns:ns2=\"http://test/2\" attA=\"aaa\" attB=\"bbb\">"
+                    + "</ns2:elementTwo>"
+                    + "</ns1:elementOne>";
+
+            Assert.AreEqual(expected, output.OuterXml);
+        }
+
+        private static IEnumerable<string> AttributeNames(XmlElement e)
+        {
+            if (e.Attributes == null)
+            {
+                yield break;
+            }
+
+            foreach (XmlAttribute a in e.Attributes)
+            {
+                yield return a.Name;
+            }
+        }
+
+        /// <summary>
+        /// Локальные имена атрибутов не из пространства имён xmlns (для проверки шага 7).
+        /// </summary>
+        private static List<string> NonNamespaceAttributeLocalNames(XmlElement e)
+        {
+            var list = new List<string>();
+            if (e.Attributes == null)
+            {
+                return list;
+            }
+
+            foreach (XmlAttribute a in e.Attributes)
+            {
+                if (a.NamespaceURI == "http://www.w3.org/2000/xmlns/")
+                {
+                    continue;
+                }
+
+                list.Add(a.LocalName);
+            }
+
+            return list;
+        }
+
+        private static List<string> AttributeOrderForSpecCheck(XmlElement e)
+        {
+            var list = new List<string>();
+            if (e.Attributes == null)
+            {
+                return list;
+            }
+
+            foreach (XmlAttribute a in e.Attributes)
+            {
+                list.Add(a.Name);
+            }
+
+            return list;
         }
     }
 }
