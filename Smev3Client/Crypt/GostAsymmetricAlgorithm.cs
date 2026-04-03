@@ -7,15 +7,15 @@ using CryptoApiLiteSharp;
 
 namespace Smev3Client.Crypt
 {
-    public class GostAsymmetricAlgorithm : AsymmetricAlgorithm
+    public sealed class GostAsymmetricAlgorithm : AsymmetricAlgorithm
     {
-        private const byte SIGN_BUFF_SIZE = 64;
+        private const byte SignBuffSize = 64;
 
         private readonly uint _keySpec;
 
-        private CspSafeHandle _cspHandle;
-        private CertStoreSafeHandle _storeHandle;
-        private CertContextSafeHandle _certHandle;
+        private CspSafeHandle? _cspHandle;
+        private CertStoreSafeHandle? _storeHandle;
+        private CertContextSafeHandle? _certHandle;
 
         private readonly Lazy<byte[]> _certRawData;
 
@@ -32,9 +32,9 @@ namespace Smev3Client.Crypt
             );
         }
 
-        protected GostAsymmetricAlgorithm()
+        private GostAsymmetricAlgorithm()
         {
-            _certRawData = new Lazy<byte[]>(() => GetCertRawData(), true);
+            _certRawData = new Lazy<byte[]>(GetCertRawData, true);
         }
 
         ~GostAsymmetricAlgorithm()
@@ -46,9 +46,13 @@ namespace Smev3Client.Crypt
 
         public byte[] CertRawData => _certRawData.Value;
 
-        private static readonly object _lock = new object();
+        private static readonly object Lock = new object();
 
-        public unsafe GostAsymmetricAlgorithm(string pfxPath, string pfxPassword, string thumbPrint)
+        public unsafe GostAsymmetricAlgorithm(
+            string pfxPath,
+            string? pfxPassword,
+            string thumbPrint
+        )
             : this()
         {
             if (string.IsNullOrWhiteSpace(thumbPrint))
@@ -68,17 +72,23 @@ namespace Smev3Client.Crypt
                         pbData = new IntPtr(ptr),
                     };
 
-                    var passwordBytes = Encoding.UTF32.GetBytes(pfxPassword ?? string.Empty);
+                    var passwordBytes = string.IsNullOrWhiteSpace(pfxPassword)
+                        ? Array.Empty<byte>()
+                        : Encoding.UTF32.GetBytes(pfxPassword);
                     fixed (byte* ptrPassword = passwordBytes)
                     {
-                        lock (_lock)
+                        lock (Lock)
                         {
-                            _storeHandle = CApiLiteNative.PFXImportCertStore(
-                                ref pfxDataBlob,
-                                new IntPtr(ptrPassword),
-                                CApiLiteConsts.CRYPT_MACHINE_KEYSET
-                                    | CApiLiteConsts.PKCS12_IMPORT_SILENT
-                            );
+                            _storeHandle =
+                                CApiLiteNative.PFXImportCertStore(
+                                    ref pfxDataBlob,
+                                    new IntPtr(ptrPassword),
+                                    CApiLiteConsts.CRYPT_MACHINE_KEYSET
+                                        | CApiLiteConsts.PKCS12_IMPORT_SILENT
+                                )
+                                ?? throw new CApiLiteLastErrorException(
+                                    nameof(CApiLiteNative.PFXImportCertStore)
+                                );
                         }
 
                         if (_storeHandle.IsInvalid)
@@ -100,14 +110,18 @@ namespace Smev3Client.Crypt
                         pbData = new IntPtr(ptr),
                     };
 
-                    _certHandle = CApiLiteNative.CertFindCertificateInStore(
-                        _storeHandle,
-                        CApiLiteConsts.PKCS_7_OR_X509_ASN_ENCODING,
-                        0,
-                        CApiLiteConsts.CERT_FIND_SHA1_HASH,
-                        new IntPtr(&thumbPrintDataBlob),
-                        IntPtr.Zero
-                    );
+                    _certHandle =
+                        CApiLiteNative.CertFindCertificateInStore(
+                            _storeHandle,
+                            CApiLiteConsts.PKCS_7_OR_X509_ASN_ENCODING,
+                            0,
+                            CApiLiteConsts.CERT_FIND_SHA1_HASH,
+                            new IntPtr(&thumbPrintDataBlob),
+                            IntPtr.Zero
+                        )
+                        ?? throw new CApiLiteLastErrorException(
+                            nameof(CApiLiteNative.CertFindCertificateInStore)
+                        );
                     if (_certHandle.IsInvalid)
                     {
                         throw new CApiLiteLastErrorException(
@@ -152,7 +166,7 @@ namespace Smev3Client.Crypt
                 );
             }
 
-            HashSafeHandle hashHandle = null;
+            HashSafeHandle? hashHandle = null;
             try
             {
                 if (
@@ -184,8 +198,8 @@ namespace Smev3Client.Crypt
                         );
                     }
 
-                    var signData = new byte[SIGN_BUFF_SIZE];
-                    var signDataLen = signData.Length;
+                    var signData = new byte[SignBuffSize];
+                    var signDataLen = SignBuffSize;
 
                     fixed (byte* ptrSignData = signData)
                     {
@@ -234,9 +248,9 @@ namespace Smev3Client.Crypt
 
         private unsafe byte[] GetCertRawData()
         {
-            if (_certHandle?.IsInvalid == true)
+            if (_certHandle is null || _certHandle.IsInvalid)
             {
-                throw new Exception("Объект не инициалирован.");
+                throw new InvalidOperationException("Объект не инициализирован");
             }
 
             var certContext = Marshal.PtrToStructure<CERT_CONTEXT>(
