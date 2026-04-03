@@ -199,7 +199,7 @@ namespace Smev3Client.Crypt
                     }
 
                     var signData = new byte[SignBuffSize];
-                    var signDataLen = SignBuffSize;
+                    var signDataLen = signData.Length;
 
                     fixed (byte* ptrSignData = signData)
                     {
