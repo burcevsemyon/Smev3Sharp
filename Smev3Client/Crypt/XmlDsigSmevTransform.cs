@@ -28,7 +28,7 @@ namespace Smev3Client.Crypt
         private static void CloneAttributes(
             XmlNode dstNode,
             XmlNode srcNode,
-            Stack<(string prefix, string namespaceUri)> namespacesStack,
+            Stack<(string prefix, string namespaceUri)> namespaces,
             ref int nsIdx
         )
         {
@@ -55,7 +55,7 @@ namespace Smev3Client.Crypt
                 )
                 {
                     prefix = "xmlns";
-                    localName = GetOrAddPrefixForUri(namespacesStack, srcAttr.Value, ref nsIdx);
+                    localName = GetOrAddPrefixForUri(namespaces, srcAttr.Value, ref nsIdx);
                 }
 
                 var newAttr = dstDocument.CreateAttribute(prefix, localName, namespaceUri);
@@ -151,7 +151,8 @@ namespace Smev3Client.Crypt
             var namespaces = new Stack<(string prefix, string namespaceUri)>();
             var outDocument = new XmlDocument { PreserveWhitespace = true };
 
-            for (var i = 0; i < _inputDocument.ChildNodes.Count; i++)
+            var nodesCount = _inputDocument.ChildNodes.Count;
+            for (var i = 0; i < nodesCount; i++)
             {
                 CloneNode(outDocument, _inputDocument.ChildNodes[i], namespaces, ref nsIdx);
             }
@@ -178,7 +179,7 @@ namespace Smev3Client.Crypt
         {
             _inputDocument = obj as XmlDocument;
 
-            if (_inputDocument == null)
+            if (_inputDocument is null)
             {
                 throw new ArgumentException($"Тип параметра должен быть {nameof(XmlDocument)}.");
             }

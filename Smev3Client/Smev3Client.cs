@@ -187,7 +187,7 @@ namespace Smev3Client
         {
             ThrowIfDisposed();
 
-            if (envelopeBytes == null)
+            if (envelopeBytes is null)
             {
                 throw new ArgumentNullException(nameof(envelopeBytes));
             }

@@ -145,7 +145,7 @@ namespace Smev3Client.Crypt
         /// </summary>
         public unsafe byte[] CreateHashSignature(byte[] hashData)
         {
-            if (hashData == null || hashData.Length == 0)
+            if (hashData is null || hashData.Length == 0)
             {
                 throw new ArgumentException(
                     $"Параметр {nameof(hashData)} должен быть не пустым массивом."

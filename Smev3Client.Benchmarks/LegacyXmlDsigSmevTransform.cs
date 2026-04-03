@@ -52,7 +52,11 @@ namespace Smev3Client.Benchmarks
                 if (localName == "xmlns")
                 {
                     prefix = "xmlns";
-                    localName = GetOrAddPrefixForUri(namespacesStack, srcNode.NamespaceURI, ref nsIdx);
+                    localName = GetOrAddPrefixForUri(
+                        namespacesStack,
+                        srcNode.NamespaceURI,
+                        ref nsIdx
+                    );
                 }
 
                 var newAttr = dstDocument.CreateAttribute(prefix, localName, namespaceUri);
@@ -175,7 +179,7 @@ namespace Smev3Client.Benchmarks
         {
             _inputDocument = obj as XmlDocument;
 
-            if (_inputDocument == null)
+            if (_inputDocument is null)
             {
                 throw new ArgumentException($"Тип параметра должен быть {nameof(XmlDocument)}.");
             }

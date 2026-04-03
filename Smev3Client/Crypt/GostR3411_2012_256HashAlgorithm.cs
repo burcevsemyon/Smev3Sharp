@@ -6,9 +6,9 @@ namespace Smev3Client.Crypt
 {
     public class GostR3411_2012_256HashAlgorithm : HashAlgorithm
     {
-        private static readonly CspSafeHandle _cspHandle;
+        private static readonly CspSafeHandle CspHandle;
 
-        private HashSafeHandle _hashHandle;
+        private HashSafeHandle? _hashHandle;
 
         private bool _disposed;
 
@@ -16,7 +16,7 @@ namespace Smev3Client.Crypt
         {
             if (
                 !CApiLiteNative.CryptAcquireContext(
-                    out _cspHandle,
+                    out CspHandle,
                     null,
                     CApiLiteConsts.CP_GR3410_2012_PROV,
                     CApiLiteConsts.PROV_GOST_2012_256,
@@ -53,11 +53,11 @@ namespace Smev3Client.Crypt
         {
             ThrowIfDisposed();
 
-            if (_hashHandle == null || _hashHandle.IsClosed || _hashHandle.IsInvalid)
+            if (_hashHandle is null || _hashHandle.IsClosed || _hashHandle.IsInvalid)
             {
                 if (
                     !CApiLiteNative.CryptCreateHash(
-                        _cspHandle,
+                        CspHandle,
                         CApiLiteConsts.CALG_GR3411_2012_256,
                         IntPtr.Zero,
                         0,

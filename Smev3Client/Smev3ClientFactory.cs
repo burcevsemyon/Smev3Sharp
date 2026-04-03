@@ -31,7 +31,7 @@ namespace Smev3Client
             _httpClientFactory =
                 httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
 
-            if (serviceConfigs == null || serviceConfigs.Count == 0)
+            if (serviceConfigs.Count == 0)
             {
                 throw new ArgumentException("Не задано конфигураций ИС СМЭВ");
             }

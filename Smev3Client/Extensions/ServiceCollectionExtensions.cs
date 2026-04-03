@@ -17,7 +17,7 @@ namespace Smev3Client.Extensions
 
         public static void AddSmev3Client(
             this IServiceCollection serviceCollection,
-            Func<SmevConfig> configure = null
+            Func<SmevConfig>? configure = null
         )
         {
             serviceCollection.AddSingleton(sp =>

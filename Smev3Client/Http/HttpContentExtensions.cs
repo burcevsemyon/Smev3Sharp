@@ -34,8 +34,7 @@ namespace Smev3Client.Http
 
             using var reader = XmlReader.Create(stream, XmlReaderSettings);
 
-            var envelope =
-                (SoapEnvelope<T>)SerializerCache<T>.EnvelopeSerializer.Deserialize(reader);
+            var envelope = (SoapEnvelope<T>)SerializerCache<T>.Instance.Deserialize(reader);
 
             return envelope.Body;
         }
@@ -134,7 +133,7 @@ namespace Smev3Client.Http
 
         private static Stream SeekToBeginIfPossible(this Stream stream)
         {
-            if (stream == null)
+            if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -150,7 +149,7 @@ namespace Smev3Client.Http
         private static class SerializerCache<TBody>
             where TBody : ISoapEnvelopeBody, new()
         {
-            internal static readonly XmlSerializer EnvelopeSerializer = new XmlSerializer(
+            internal static readonly XmlSerializer Instance = new XmlSerializer(
                 typeof(SoapEnvelope<TBody>)
             );
         }

@@ -185,13 +185,12 @@ namespace Smev3Client.Tests
         [TestMethod]
         public void GetOutput_RemovesProcessingInstructions()
         {
-            var input = Parse("<?xml version=\"1.0\" encoding=\"utf-8\"?><root><?pi-test data?></root>");
+            var input = Parse(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?><root><?pi-test data?></root>"
+            );
             var output = Transform(input);
 
-            var anyPi = output
-                .SelectNodes("//processing-instruction()")
-                ?.Cast<XmlNode>()
-                .Any();
+            var anyPi = output.SelectNodes("//processing-instruction()")?.Cast<XmlNode>().Any();
             Assert.IsFalse(anyPi ?? false);
             Assert.AreEqual("root", output.DocumentElement?.LocalName);
         }
@@ -202,7 +201,6 @@ namespace Smev3Client.Tests
             var t = new XmlDsigSmevTransform();
 
             var ex = Assert.ThrowsException<InvalidOperationException>(() => t.GetOutput());
-
         }
 
         // --- Ниже: ожидаемое поведение по спецификации СМЭВ 3.x (см. smev-transform.md).
@@ -221,7 +219,9 @@ namespace Smev3Client.Tests
         // Сценарии из прил. Д МР 3.5.0.28 — отдельные тесты ниже.
 
         [TestMethod]
-        [Ignore("СМЭВ шаг 2: удаление текстовых узлов, состоящих только из пробельных символов (≤ U+0020).")]
+        [Ignore(
+            "СМЭВ шаг 2: удаление текстовых узлов, состоящих только из пробельных символов (≤ U+0020)."
+        )]
         public void GetOutput_Step2_RemovesWhitespaceOnlyTextBetweenElements()
         {
             var input = Parse("<root>\n\t <inner xmlns=\"http://x\" />\n </root>");
@@ -234,7 +234,9 @@ namespace Smev3Client.Tests
         }
 
         [TestMethod]
-        [Ignore("СМЭВ шаг 3: пустой элемент после канонизации — пара тегов <tag></tag>, не самозакрывающаяся форма.")]
+        [Ignore(
+            "СМЭВ шаг 3: пустой элемент после канонизации — пара тегов <tag></tag>, не самозакрывающаяся форма."
+        )]
         public void GetOutput_Step3_EmptyElementBecomesExplicitOpenClosePair()
         {
             var input = Parse("<root xmlns=\"http://x\"><leaf xmlns=\"http://x\"/></root>");
@@ -242,7 +244,10 @@ namespace Smev3Client.Tests
 
             var leaf = output.DocumentElement?.FirstChild as XmlElement;
             Assert.IsNotNull(leaf);
-            Assert.IsFalse(leaf.IsEmpty, "По спецификации СМЭВ пустой тег должен стать парой открывающий/закрывающий.");
+            Assert.IsFalse(
+                leaf.IsEmpty,
+                "По спецификации СМЭВ пустой тег должен стать парой открывающий/закрывающий."
+            );
         }
 
         [TestMethod]
@@ -266,7 +271,9 @@ namespace Smev3Client.Tests
         }
 
         [TestMethod]
-        [Ignore("СМЭВ шаг 7: атрибуты без префикса сортируются по локальному имени (attA перед attB).")]
+        [Ignore(
+            "СМЭВ шаг 7: атрибуты без префикса сортируются по локальному имени (attA перед attB)."
+        )]
         public void GetOutput_Step7_UnprefixedAttributesSortedLexicographically()
         {
             const string u = "http://test/1";
@@ -321,8 +328,7 @@ namespace Smev3Client.Tests
                 Assert.IsTrue(
                     cmpNs < 0
                         || (
-                            cmpNs == 0
-                            && string.CompareOrdinal(prev.LocalName, cur.LocalName) <= 0
+                            cmpNs == 0 && string.CompareOrdinal(prev.LocalName, cur.LocalName) <= 0
                         ),
                     "Внутри qualified: сначала по URI, при равенстве — по локальному имени."
                 );
@@ -330,7 +336,9 @@ namespace Smev3Client.Tests
         }
 
         [TestMethod]
-        [Ignore("СМЭВ шаг 8: объявления xmlns располагаются перед обычными атрибутами (после сортировки).")]
+        [Ignore(
+            "СМЭВ шаг 8: объявления xmlns располагаются перед обычными атрибутами (после сортировки)."
+        )]
         public void GetOutput_Step8_XmlnsDeclarationsBeforeRegularAttributes()
         {
             const string u = "http://test/1";
@@ -372,7 +380,9 @@ namespace Smev3Client.Tests
         }
 
         [TestMethod]
-        [Ignore("СМЭВ: полный пример из smev-transform.md (префиксы, сортировка атрибутов, пустой элемент как пара тегов).")]
+        [Ignore(
+            "СМЭВ: полный пример из smev-transform.md (префиксы, сортировка атрибутов, пустой элемент как пара тегов)."
+        )]
         public void GetOutput_MatchesSmevTransformDocSample()
         {
             var input = Parse(
@@ -385,9 +395,9 @@ namespace Smev3Client.Tests
 
             const string expected =
                 "<ns1:elementOne xmlns:ns1=\"http://test/1\">"
-                    + "<ns2:elementTwo xmlns:ns2=\"http://test/2\" attA=\"aaa\" attB=\"bbb\">"
-                    + "</ns2:elementTwo>"
-                    + "</ns1:elementOne>";
+                + "<ns2:elementTwo xmlns:ns2=\"http://test/2\" attA=\"aaa\" attB=\"bbb\">"
+                + "</ns2:elementTwo>"
+                + "</ns1:elementOne>";
 
             Assert.AreEqual(expected, output.OuterXml);
         }
@@ -396,7 +406,9 @@ namespace Smev3Client.Tests
         /// Приложение Д.4 МР 3.5.0.28: удаление неиспользуемого xmlns:fnst с корневого элемента (упрощённый фрагмент).
         /// </summary>
         [TestMethod]
-        [Ignore("Прил. Д.4 / шаг 4: неиспользуемое объявление xmlns:fnst не должно попадать в результат.")]
+        [Ignore(
+            "Прил. Д.4 / шаг 4: неиспользуемое объявление xmlns:fnst не должно попадать в результат."
+        )]
         public void GetOutput_AppendixD4_RemovesUnusedXmlnsFnstFromRoot()
         {
             const string uTns = "urn://x-artefacts-zags-pernamezp/4.0.0";
@@ -437,10 +449,10 @@ namespace Smev3Client.Tests
             Assert.IsNotNull(root);
             const string expectedStart =
                 "<ns1:PERNAMEZPRequest xmlns:ns1=\"urn://x-artefacts-zags-pernamezp/4.0.0\" "
-                    + "xmlns:ns2=\"urn://x-artefacts-zags-pernamezp/frgutypes/4.0.0\" "
-                    + "xmlns:ns3=\"urn://x-artefacts-zags-pernamezp/markertypes/4.0.0\" "
-                    + "ns1:ИдСвед=\"a\" ns2:КодУслуги=\"3482943\" ns3:Заявление=\"15843\" ns3:ТипЗаявл=\"ФЛ\" "
-                    + "ДатаСвед=\"2018-08-13\" ЗаявлДата=\"2019-08-13\"";
+                + "xmlns:ns2=\"urn://x-artefacts-zags-pernamezp/frgutypes/4.0.0\" "
+                + "xmlns:ns3=\"urn://x-artefacts-zags-pernamezp/markertypes/4.0.0\" "
+                + "ns1:ИдСвед=\"a\" ns2:КодУслуги=\"3482943\" ns3:Заявление=\"15843\" ns3:ТипЗаявл=\"ФЛ\" "
+                + "ДатаСвед=\"2018-08-13\" ЗаявлДата=\"2019-08-13\"";
 
             StringAssert.StartsWith(root.OuterXml, expectedStart);
             CollectionAssert.DoesNotContain(
@@ -454,7 +466,9 @@ namespace Smev3Client.Tests
         /// Приложение Д.7 МР 3.5.0.28 / шаг 9.1: декодирование текстового содержимого (&amp;gt; и т.д.).
         /// </summary>
         [TestMethod]
-        [Ignore("Прил. Д.7 / шаг 9.1: эталонное содержимое после нормализации текста (см. МР, блок Фамилия).")]
+        [Ignore(
+            "Прил. Д.7 / шаг 9.1: эталонное содержимое после нормализации текста (см. МР, блок Фамилия)."
+        )]
         public void GetOutput_AppendixD7_Step9_FamilyNameText_Normalized()
         {
             const string u = "urn://x-artefacts-zags-pernamezp/types/4.0.0";
@@ -471,7 +485,9 @@ namespace Smev3Client.Tests
         /// Приложение Д.7 МР 3.5.0.28 / шаг 9.2: нормализация и декодирование значения qualified-атрибута.
         /// </summary>
         [TestMethod]
-        [Ignore("Прил. Д.7 / шаг 9.2: значение ns1:НомерЗапис после трансформации (см. МР, СведРегПерИмя).")]
+        [Ignore(
+            "Прил. Д.7 / шаг 9.2: значение ns1:НомерЗапис после трансформации (см. МР, СведРегПерИмя)."
+        )]
         public void GetOutput_AppendixD7_Step9_QualifiedAttributeValue_Normalized()
         {
             const string uTns = "urn://x-artefacts-zags-pernamezp/4.0.0";
@@ -528,7 +544,7 @@ namespace Smev3Client.Tests
 
         private static IEnumerable<string> AttributeNames(XmlElement e)
         {
-            if (e.Attributes == null)
+            if (e.Attributes is null)
             {
                 yield break;
             }
@@ -545,7 +561,7 @@ namespace Smev3Client.Tests
         private static List<string> NonNamespaceAttributeLocalNames(XmlElement e)
         {
             var list = new List<string>();
-            if (e.Attributes == null)
+            if (e.Attributes is null)
             {
                 return list;
             }
@@ -566,7 +582,7 @@ namespace Smev3Client.Tests
         private static List<string> AttributeOrderForSpecCheck(XmlElement e)
         {
             var list = new List<string>();
-            if (e.Attributes == null)
+            if (e.Attributes is null)
             {
                 return list;
             }
