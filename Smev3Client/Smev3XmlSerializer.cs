@@ -21,7 +21,7 @@ namespace Smev3Client
 
             using var writer = XmlWriter.Create(stream, XmlWriterSettings);
 
-            SerializerCache<T>.Serializer.Serialize(writer, i);
+            SerializerCache<T>.Instance.Serialize(writer, i);
 
             writer.Flush();
 
@@ -40,7 +40,7 @@ namespace Smev3Client
         private static class SerializerCache<T>
             where T : new()
         {
-            internal static readonly XmlSerializer Serializer = new XmlSerializer(typeof(T));
+            internal static readonly XmlSerializer Instance = new XmlSerializer(typeof(T));
         }
     }
 }
