@@ -42,7 +42,8 @@ namespace Smev3Client.Crypt
             }
 
             var dstDocument = GetNodeDoc(dstNode);
-            for (var i = 0; i < srcNode.Attributes.Count; i++)
+            var attrCount = srcNode.Attributes.Count;
+            for (var i = 0; i < attrCount; i++)
             {
                 var srcAttr = srcNode.Attributes[i];
                 var prefix = srcAttr.Prefix;
@@ -65,12 +66,12 @@ namespace Smev3Client.Crypt
         }
 
         private static string GetOrAddPrefixForUri(
-            Stack<(string prefix, string namespaceUri)> stack,
+            Stack<(string prefix, string namespaceUri)> namespaces,
             string uri,
             ref int nsIdx
         )
         {
-            foreach (var ns in stack)
+            foreach (var ns in namespaces)
             {
                 if (ns.namespaceUri == uri)
                 {
@@ -79,7 +80,7 @@ namespace Smev3Client.Crypt
             }
 
             var res = (prefix: $"ns{++nsIdx}", namespaceUri: uri);
-            stack.Push(res);
+            namespaces.Push(res);
             return res.prefix;
         }
 

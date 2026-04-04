@@ -27,7 +27,7 @@ namespace Smev3Client.Crypt
                 XmlDsigConsts.XmlDsigGost3410_2012_256Url
             );
             CryptoConfig.AddAlgorithm(
-                typeof(GostR3411_2012_256HashAlgorithm),
+                typeof(GostHashAlgorithm),
                 XmlDsigConsts.XmlDsigGost3411_2012_256Url
             );
         }

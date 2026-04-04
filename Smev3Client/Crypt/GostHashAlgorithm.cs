@@ -4,7 +4,7 @@ using CryptoApiLiteSharp;
 
 namespace Smev3Client.Crypt
 {
-    public class GostR3411_2012_256HashAlgorithm : HashAlgorithm
+    public class GostHashAlgorithm : HashAlgorithm
     {
         private static readonly CspSafeHandle CspHandle;
 
@@ -12,7 +12,7 @@ namespace Smev3Client.Crypt
 
         private bool _disposed;
 
-        static GostR3411_2012_256HashAlgorithm()
+        static GostHashAlgorithm()
         {
             if (
                 !CApiLiteNative.CryptAcquireContext(
@@ -28,12 +28,12 @@ namespace Smev3Client.Crypt
             }
         }
 
-        public GostR3411_2012_256HashAlgorithm()
+        public GostHashAlgorithm()
         {
             HashSizeValue = 256;
         }
 
-        ~GostR3411_2012_256HashAlgorithm()
+        ~GostHashAlgorithm()
         {
             Dispose(false);
         }
@@ -106,11 +106,6 @@ namespace Smev3Client.Crypt
                 }
             }
 
-            if (dataLength != data.Length)
-            {
-                throw new Exception("Неверный размер хэша!");
-            }
-
             return data;
         }
 
@@ -133,7 +128,7 @@ namespace Smev3Client.Crypt
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(nameof(GostR3411_2012_256HashAlgorithm));
+                throw new ObjectDisposedException(nameof(GostHashAlgorithm));
             }
         }
     }

@@ -15,7 +15,7 @@ namespace Smev3Client.Crypt
 
         public override HashAlgorithm CreateDigest()
         {
-            return new GostR3411_2012_256HashAlgorithm();
+            return new GostHashAlgorithm();
         }
     }
 }
