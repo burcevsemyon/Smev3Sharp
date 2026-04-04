@@ -130,7 +130,8 @@ namespace Smev3Client.Crypt
 
             dstParentNode.AppendChild(newNode);
 
-            for (var i = 0; i < srcNode.ChildNodes.Count; i++)
+            var nodesCount = srcNode.ChildNodes.Count;
+            for (var i = 0; i < nodesCount; i++)
             {
                 CloneNode(newNode, srcNode.ChildNodes[i], namespaces, ref nsIdx);
             }

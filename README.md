@@ -1,6 +1,14 @@
 # Smev3Sharp
 
-Частичная реализация HTTP клиента для СМЭВ 3 (версии схем 1.2) с поддержкой подписи XML средствами СКЗИ КРИПТО-ПРО для Linux
+Частичная реализация HTTP клиента для СМЭВ 3 (версии схем 1.2) с поддержкой подписи XML средствами СКЗИ КРИПТО-ПРО для Linux.
+
+**English:** Partial SMEV 3 (schema 1.2) HTTP client for .NET with XML signing via CryptoPro on Linux.
+
+#### Установка (NuGet)
+
+```bash
+dotnet add package Smev3Sharp
+```
 
 #### Реализованные методы:
 1. SendRequest (Отправка запроса)
@@ -10,11 +18,12 @@
 #### Зависимости:
 
 .NET Standard 2.1  
-System.Security.Cryptography.Xml 5.0.0  
+
+Прямые ссылки на пакеты (остальное — транзитивно, в т.ч. `Microsoft.Extensions.Configuration.Abstractions`, `Microsoft.Extensions.DependencyInjection.Abstractions`):
+ 
+System.Security.Cryptography.Xml 6.0.1  
 Microsoft.Extensions.Http 5.0.0  
 Microsoft.AspNetCore.WebUtilities 2.2.0  
-Microsoft.Extensions.DependencyInjection.Abstractions 5.0.0  
-Microsoft.Extensions.Configuration.Abstractions 5.0.0  
 Microsoft.Extensions.Configuration.Binder 5.0.0  
 CryptoApiLiteSharp 1.1.0  
 
@@ -148,7 +157,7 @@ namespace Smev3ClientExample
     {
         static async void Main(string[] args)
         {
-            ...            
+            ...
             
             var sendingContext = new SendRequestExecutionContext<SomeSmevServiceRequest>
             {
@@ -189,7 +198,7 @@ namespace Smev3ClientExample
     {
         static async void Main(string[] args)
         {
-            ...            
+            ...
             
             using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
@@ -247,7 +256,7 @@ namespace Smev3ClientExample
     {
         static async void Main(string[] args)
         {
-            ...            
+            ...
             
             using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
@@ -284,7 +293,7 @@ namespace Smev3ClientExample
     {
         static async void Main(string[] args)
         {
-            ...            
+            ...
             
             using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
@@ -320,7 +329,7 @@ namespace Smev3ClientExample
     {
         static async void Main(string[] args)
         {
-            ...            
+            ...
             
             using ISmev3Client client = factory.Get("SMEV_SVC_MNEMONIC");
 
