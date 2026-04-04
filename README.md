@@ -15,18 +15,6 @@ dotnet add package Smev3Sharp
 2. GetResponse (Получение ответа из очереди входящих ответов)
 3. Ack (Подтверждение сообщения)
 
-#### Зависимости:
-
-.NET Standard 2.1  
-
-Прямые ссылки на пакеты (остальное — транзитивно, в т.ч. `Microsoft.Extensions.Configuration.Abstractions`, `Microsoft.Extensions.DependencyInjection.Abstractions`):
- 
-System.Security.Cryptography.Xml 6.0.1  
-Microsoft.Extensions.Http 5.0.0  
-Microsoft.AspNetCore.WebUtilities 2.2.0  
-Microsoft.Extensions.Configuration.Binder 5.0.0  
-CryptoApiLiteSharp 1.1.0  
-
 * [Конфигурирование](#Конфигурирование-через-appsettingsjson)
     * [Конфигурирование через appsettings.json](#Конфигурирование-через-appsettingsjson)
     * [Конфигурирование через делегат](#Конфигурирование-через-делегат)
