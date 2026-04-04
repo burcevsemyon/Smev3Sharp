@@ -2,3 +2,6 @@
 # Library code should avoid capturing SynchronizationContext by default.
 dotnet_diagnostic.CA2007.severity = error
 
+
+# IDE0005: Using directive is unnecessary.
+dotnet_diagnostic.IDE0005.severity = error
